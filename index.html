@@ -7,7 +7,7 @@
     <!-- Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <title>學測單字記憶卡 - 自動同步版</title>
+    <title>學測單字記憶卡 - Supabase Realtime 即時同步版</title>
 
     <style>
         :root {
@@ -1240,11 +1240,7 @@
         // 設定
         // =========================================================
 
-        // 單字本體只存在 Supabase；LocalStorage 只保存「熟悉狀態」
-        const KNOWN_STORAGE_KEY =
-            "csat_vocabulary_known_status_v1";
-
-        const LEGACY_STORAGE_KEY =
+        const STORAGE_KEY =
             "csat_vocabulary_permanent_storage_v5";
 
         const THEME_KEY =
@@ -1291,59 +1287,38 @@
         }
 
 
-        function getLocalKnownStatuses() {
+        function getLocalWords() {
 
             try {
-                const saved =
-                    localStorage.getItem(KNOWN_STORAGE_KEY);
 
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-                        return parsed;
-                    }
+                const saved =
+                    localStorage.getItem(STORAGE_KEY);
+
+                if (!saved) {
+                    return getDefaultWords();
                 }
 
-                // 從舊版本 LocalStorage 遷移「known」資料一次；
-                // 遷移後不再保存完整單字資料。
-                const legacy =
-                    localStorage.getItem(LEGACY_STORAGE_KEY);
+                const parsed =
+                    JSON.parse(saved);
 
-                if (legacy) {
-                    const parsedLegacy = JSON.parse(legacy);
-                    if (Array.isArray(parsedLegacy)) {
-                        const migrated = {};
-                        parsedLegacy.forEach(item => {
-                            if (item && item.word) {
-                                const key = `${item.word}\u0000${item.category || "其他"}`;
-                                migrated[key] = item.known === true;
-                            }
-                        });
-
-                        localStorage.setItem(
-                            KNOWN_STORAGE_KEY,
-                            JSON.stringify(migrated)
-                        );
-
-                        return migrated;
-                    }
+                if (Array.isArray(parsed)) {
+                    return parsed;
                 }
 
             } catch (error) {
+
                 console.error(
-                    "讀取熟悉狀態失敗：",
+                    "讀取 LocalStorage 失敗：",
                     error
                 );
+
             }
 
-            return {};
+            return getDefaultWords();
         }
 
 
-        let knownStatuses = getLocalKnownStatuses();
-
-        // 單字本體不從 LocalStorage 載入，開啟網頁後一律以 Supabase 為準。
-        let words = [];
+        let words = getLocalWords();
 
         let currentTheme =
             localStorage.getItem(THEME_KEY) || "light";
@@ -1363,9 +1338,6 @@
         let isLoadingFromSupabase = false;
 
         let saveTimer = null;
-
-        // Supabase vocabulary 表目前已存在的資料 ID
-        let cloudWordIds = new Set();
 
 
         // =========================================================
@@ -1741,7 +1713,7 @@
 
                 renderWordList();
 
-                
+                saveToLocalStorageOnly();
 
                 return;
             }
@@ -1815,7 +1787,7 @@
             renderWordList();
 
             // 本機儲存
-            
+            saveToLocalStorageOnly();
         }
 
 
@@ -1960,7 +1932,9 @@
                 words[originalIndex].known =
                     status;
 
-                saveKnownStatus(words[originalIndex], status);
+                saveToLocalStorageOnly();
+
+                
             }
 
 
@@ -1985,147 +1959,87 @@
 
         async function addWord() {
 
-            const wordInput =
-                document.getElementById(
-                    "inputWord"
-                );
+            const wordInput = document.getElementById("inputWord");
+            const meaningInput = document.getElementById("inputMeaning");
+            const exampleInput = document.getElementById("inputExample");
+            const categoryInput = document.getElementById("inputCategory");
 
-            const meaningInput =
-                document.getElementById(
-                    "inputMeaning"
-                );
+            const newWordValue = wordInput.value.trim();
+            const newMeaningValue = meaningInput.value.trim();
+            const newExampleValue = exampleInput.value.trim();
+            const newCategoryValue = categoryInput.value;
 
-            const exampleInput =
-                document.getElementById(
-                    "inputExample"
-                );
-
-            const categoryInput =
-                document.getElementById(
-                    "inputCategory"
-                );
-
-
-            const newWordValue =
-                wordInput.value.trim();
-
-            const newMeaningValue =
-                meaningInput.value.trim();
-
-            const newExampleValue =
-                exampleInput.value.trim();
-
-            const newCategoryValue =
-                categoryInput.value;
-
-
-            if (
-                !newWordValue ||
-                !newMeaningValue
-            ) {
-
-                alert(
-                    "請至少填寫「單字」與「中文意思」！"
-                );
-
+            if (!newWordValue || !newMeaningValue) {
+                alert("請至少填寫「單字」與「中文意思」！");
                 return;
             }
 
-
-            // 檢查重複
-            const isDuplicate =
-                words.some(
-                    item =>
-                        String(item.word)
-                            .toLowerCase() ===
-                        newWordValue.toLowerCase() &&
-                        item.category ===
-                        newCategoryValue
-                );
-
+            const isDuplicate = words.some(item =>
+                String(item.word).toLowerCase() === newWordValue.toLowerCase() &&
+                item.category === newCategoryValue
+            );
 
             if (isDuplicate) {
-
-                alert(
-                    `字庫中已經存在相同詞性（${newCategoryValue}）的「${newWordValue}」了！`
-                );
-
+                alert(`字庫中已經存在相同詞性（${newCategoryValue}）的「${newWordValue}」了！`);
                 return;
             }
 
-
-            // 新增
-            const newWord = {
-                word: newWordValue,
-                meaning: newMeaningValue,
-                example: newExampleValue,
-                category: newCategoryValue,
-                known: false
-            };
-
-            words.push(newWord);
-            saveKnownStatus(newWord, false);
-
-
-            // 清空表單
-            wordInput.value = "";
-
-            meaningInput.value = "";
-
-            exampleInput.value = "";
-
-
-            // 自動切到新增的詞性
-            categoryFilter.value =
-                newCategoryValue;
-
-            currentStatusFilter =
-                "all";
-
-            document
-                .querySelectorAll(".filter-tab-btn")
-                .forEach(btn =>
-                    btn.classList.remove("active")
-                );
-
-            document
-                .getElementById("statusBtn-all")
-                .classList.add("active");
-
-            searchInput.value = "";
-
-
-            // 找到新單字位置
-            const filteredWords =
-                getFilteredWords();
-
-            const newIndex =
-                filteredWords.findIndex(
-                    item =>
-                        item.word === newWordValue &&
-                        item.category === newCategoryValue
-                );
-
-
-            if (newIndex !== -1) {
-
-                currentIndex =
-                    newIndex;
-
-                currentListPage =
-                    Math.floor(
-                        newIndex /
-                        itemsPerPage
-                    ) + 1;
+            if (!supabaseClient) {
+                alert("目前無法連線 Supabase，無法新增雲端單字。");
+                return;
             }
 
+            try {
+                syncStatus.textContent = "狀態：☁️ 正在新增單字...";
 
-            updateCard();
+                const { data: inserted, error } = await supabaseClient
+                    .from("vocabulary")
+                    .insert({
+                        word: newWordValue,
+                        meaning: newMeaningValue,
+                        example: newExampleValue,
+                        category: newCategoryValue
+                    })
+                    .select("id, word, meaning, example, category, created_at")
+                    .single();
 
-            // 新增只送「這一筆」到 Supabase，不再上傳整個單字庫。
-            await insertWordToSupabase(newWord);
+                if (error) throw error;
 
-            updateCard();
+                const row = {
+                    ...inserted,
+                    known: getKnownState(inserted.id, inserted.word, inserted.category)
+                };
+
+                if (!words.some(item => item.id === row.id)) {
+                    words.push(row);
+                }
+                saveKnownStates();
+
+                wordInput.value = "";
+                meaningInput.value = "";
+                exampleInput.value = "";
+
+                categoryFilter.value = newCategoryValue;
+                currentStatusFilter = "all";
+                document.querySelectorAll(".filter-tab-btn").forEach(btn => btn.classList.remove("active"));
+                document.getElementById("statusBtn-all").classList.add("active");
+                searchInput.value = "";
+
+                const filteredWords = getFilteredWords();
+                const newIndex = filteredWords.findIndex(item => item.id === row.id);
+                if (newIndex !== -1) {
+                    currentIndex = newIndex;
+                    currentListPage = Math.floor(newIndex / itemsPerPage) + 1;
+                }
+
+                updateCard();
+                syncStatus.textContent = "狀態：🟢 已新增單字並同步到雲端";
+
+            } catch (error) {
+                console.error("新增單字失敗：", error);
+                syncStatus.textContent = "狀態：⚠️ 新增雲端單字失敗";
+                alert("新增單字失敗：" + (error.message || error));
+            }
         }
 
 
@@ -2186,92 +2100,64 @@
 
 
         // =========================================================
-        // 確認刪除
+        // 確認刪除：直接刪除 Supabase 單筆資料
         // =========================================================
 
-        confirmDeleteBtn.onclick =
-            async function () {
+        confirmDeleteBtn.onclick = async function () {
 
-                if (!pendingDeleteTarget) {
-                    return;
-                }
+            if (!pendingDeleteTarget) return;
 
+            const { word: wordText, category: categoryText } = pendingDeleteTarget;
 
-                const {
-                    word: wordText,
-                    category: categoryText
-                } =
-                    pendingDeleteTarget;
+            const originalIndex = words.findIndex(item =>
+                item.word === wordText && item.category === categoryText
+            );
 
+            if (originalIndex === -1) {
+                closeDeleteModal();
+                return;
+            }
 
-                const originalIndex =
-                    words.findIndex(
-                        item =>
-                            item.word === wordText &&
-                            item.category === categoryText
-                    );
+            const target = words[originalIndex];
 
+            if (!supabaseClient || !target.id) {
+                alert("這筆單字沒有有效的雲端 ID，無法安全刪除。");
+                return;
+            }
 
-                let deletedWord = null;
+            try {
+                syncStatus.textContent = "狀態：☁️ 正在刪除...";
 
-                if (originalIndex !== -1) {
+                const { error } = await supabaseClient
+                    .from("vocabulary")
+                    .delete()
+                    .eq("id", target.id);
 
-                    deletedWord = words[originalIndex];
-                    removeKnownStatus(deletedWord);
+                if (error) throw error;
 
-                    words.splice(
-                        originalIndex,
-                        1
-                    );
-                }
-
+                words.splice(originalIndex, 1);
+                removeKnownState(target.id, target.word, target.category);
+                saveKnownStates();
 
                 closeDeleteModal();
 
-
-                const filteredWords =
-                    getFilteredWords();
-
-
-                if (
-                    currentIndex >=
-                    filteredWords.length
-                ) {
-
-                    currentIndex =
-                        Math.max(
-                            0,
-                            filteredWords.length - 1
-                        );
+                const filteredWords = getFilteredWords();
+                if (currentIndex >= filteredWords.length) {
+                    currentIndex = Math.max(0, filteredWords.length - 1);
                 }
 
-
-                const maxPage =
-                    Math.max(
-                        1,
-                        Math.ceil(
-                            filteredWords.length /
-                            itemsPerPage
-                        )
-                    );
-
-
-                if (
-                    currentListPage >
-                    maxPage
-                ) {
-
-                    currentListPage =
-                        maxPage;
-                }
-
+                const maxPage = Math.max(1, Math.ceil(filteredWords.length / itemsPerPage));
+                if (currentListPage > maxPage) currentListPage = maxPage;
 
                 updateCard();
+                syncStatus.textContent = "狀態：🟢 已刪除並同步到雲端";
 
-                if (deletedWord) {
-                    await deleteWordFromSupabase(deletedWord);
-                }
-            };
+            } catch (error) {
+                console.error("刪除單字失敗：", error);
+                syncStatus.textContent = "狀態：⚠️ 刪除雲端單字失敗";
+                alert("刪除失敗：" + (error.message || error));
+            }
+        };
 
 
         // =========================================================
@@ -2280,51 +2166,62 @@
 
         async function loadDefaultWords() {
 
-            const confirmed =
-                confirm(
-                    "確定要重置並載入預設的分類單字庫嗎？\n\n目前自訂單字與背誦狀態都會被重置。"
-                );
+            const confirmed = confirm(
+                "確定要重置雲端字庫並載入預設的分類單字庫嗎？\n\n這會刪除目前 vocabulary 的全部單字並重新建立預設單字。"
+            );
 
+            if (!confirmed) return;
 
-            if (!confirmed) {
+            if (!supabaseClient) {
+                alert("目前無法連線 Supabase，無法重置雲端字庫。");
                 return;
             }
 
+            try {
+                syncStatus.textContent = "狀態：☁️ 正在重置雲端字庫...";
 
-            words =
-                getDefaultWords();
+                const { error: deleteError } = await supabaseClient
+                    .from("vocabulary")
+                    .delete()
+                    .not("id", "is", null);
 
-            knownStatuses = {};
-            saveKnownStatuses();
+                if (deleteError) throw deleteError;
 
-            currentIndex = 0;
+                const defaults = getDefaultWords().map(item => ({
+                    word: item.word,
+                    meaning: item.meaning,
+                    example: item.example || "",
+                    category: item.category || "名詞"
+                }));
 
-            currentListPage = 1;
+                const { data: inserted, error: insertError } = await supabaseClient
+                    .from("vocabulary")
+                    .insert(defaults)
+                    .select("id, word, meaning, example, category, created_at");
 
-            currentStatusFilter =
-                "all";
+                if (insertError) throw insertError;
 
-            categoryFilter.value =
-                "all";
+                clearKnownStates();
+                words = (inserted || []).map(item => ({ ...item, known: false }));
+                saveKnownStates();
 
-            searchInput.value =
-                "";
+                currentIndex = 0;
+                currentListPage = 1;
+                currentStatusFilter = "all";
+                categoryFilter.value = "all";
+                searchInput.value = "";
 
+                document.querySelectorAll(".filter-tab-btn").forEach(btn => btn.classList.remove("active"));
+                document.getElementById("statusBtn-all").classList.add("active");
 
-            document
-                .querySelectorAll(".filter-tab-btn")
-                .forEach(btn =>
-                    btn.classList.remove("active")
-                );
+                updateCard();
+                syncStatus.textContent = `狀態：🟢 雲端字庫已重置 (${new Date().toLocaleTimeString()})`;
 
-            document
-                .getElementById("statusBtn-all")
-                .classList.add("active");
-
-
-            updateCard();
-
-            await replaceAllCloudWords();
+            } catch (error) {
+                console.error("重置雲端字庫失敗：", error);
+                syncStatus.textContent = "狀態：⚠️ 雲端重置失敗";
+                alert("重置失敗：" + (error.message || error));
+            }
         }
 
 
@@ -2428,9 +2325,6 @@
 
 
                         // 基本資料清理
-                        // 匯入的是「雲端單字本體」；known 另外保存到 LocalStorage。
-                        knownStatuses = {};
-
                         words =
                             importedWords
                                 .filter(
@@ -2471,11 +2365,6 @@
                                     })
                                 );
 
-                        words.forEach(word => {
-                            knownStatuses[getWordStatusKey(word)] = word.known === true;
-                        });
-                        saveKnownStatuses();
-
 
                         currentIndex = 0;
 
@@ -2513,11 +2402,21 @@
 
                         updateCard();
 
-                        await replaceAllCloudWords();
+                        try {
+                            await replaceCloudVocabulary(words);
+                        } catch (error) {
+                            console.error("匯入雲端同步失敗：", error);
+                            alert("本機匯入成功，但雲端同步失敗：" + (error.message || error));
+                            return;
+                        }
 
                         alert(
-                            "資料匯入成功！"
+                            "資料匯入成功並已同步雲端！"
                         );
+
+
+                        syncStatus.textContent =
+                            "狀態：🟡 匯入完成，正在同步...";
                     }
 
                     catch (error) {
@@ -2986,281 +2885,154 @@
 
 
         // =========================================================
-        // LocalStorage：只保存「熟悉狀態」
+        // LocalStorage：只保存每位使用者自己的熟悉狀態
         // =========================================================
 
-        function getWordStatusKey(word) {
-            if (word?.id) {
-                return `id:${word.id}`;
-            }
+        const KNOWN_STORAGE_KEY =
+            "csat_vocabulary_known_states_v1";
 
-            return `word:${String(word?.word || "").toLowerCase()}\u0000${word?.category || "其他"}`;
+        function makeKnownKey(id, word, category) {
+            return id ? String(id) : `${String(word || "").toLowerCase()}||${String(category || "")}`;
         }
 
-
-        function getKnownStatus(word) {
-            const idKey = word?.id ? `id:${word.id}` : null;
-            const legacyKey = `word:${String(word?.word || "").toLowerCase()}\u0000${word?.category || "其他"}`;
-
-            if (idKey && Object.prototype.hasOwnProperty.call(knownStatuses, idKey)) {
-                return knownStatuses[idKey] === true;
-            }
-
-            if (Object.prototype.hasOwnProperty.call(knownStatuses, legacyKey)) {
-                return knownStatuses[legacyKey] === true;
-            }
-
-            // 舊版遷移時可能使用沒有 word: 前綴的 key。
-            const oldKey = `${word?.word || ""}\u0000${word?.category || "其他"}`;
-            if (Object.prototype.hasOwnProperty.call(knownStatuses, oldKey)) {
-                return knownStatuses[oldKey] === true;
-            }
-
-            return false;
-        }
-
-
-        function saveKnownStatuses() {
+        function getKnownMap() {
             try {
-                localStorage.setItem(
-                    KNOWN_STORAGE_KEY,
-                    JSON.stringify(knownStatuses)
-                );
+                const raw = localStorage.getItem(KNOWN_STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
             } catch (error) {
-                console.error(
-                    "熟悉狀態儲存失敗：",
-                    error
-                );
+                console.error("熟悉狀態讀取失敗：", error);
+                return {};
             }
         }
 
-
-        function saveKnownStatus(word, status) {
-            knownStatuses[getWordStatusKey(word)] = status === true;
-            saveKnownStatuses();
-        }
-
-
-        function removeKnownStatus(word) {
-            const keys = [
-                getWordStatusKey(word),
-                `word:${String(word?.word || "").toLowerCase()}\u0000${word?.category || "其他"}`,
-                `${word?.word || ""}\u0000${word?.category || "其他"}`
-            ];
-
-            keys.forEach(key => {
-                delete knownStatuses[key];
-            });
-
-            saveKnownStatuses();
-        }
-
-
-        function applyLocalKnownStatuses() {
-            words.forEach(word => {
-                word.known = getKnownStatus(word);
-            });
-        }
-
-
-        // =========================================================
-        // 單筆即時雲端同步
-        // =========================================================
-
-        function showCloudError(action, error) {
-            console.error(`Supabase ${action}失敗：`, error);
-            syncStatus.textContent =
-                `狀態：⚠️ 雲端${action}失敗，資料已保留在本機`;
-        }
-
-
-        async function insertWordToSupabase(word) {
-            if (!supabaseClient) {
-                syncStatus.textContent =
-                    "狀態：⚠️ Supabase 未初始化，資料已保留在本機";
-                return false;
+        function saveKnownMap(map) {
+            try {
+                localStorage.setItem(KNOWN_STORAGE_KEY, JSON.stringify(map));
+            } catch (error) {
+                console.error("熟悉狀態儲存失敗：", error);
             }
+        }
+
+        function getKnownState(id, word, category) {
+            const map = getKnownMap();
+            const key = makeKnownKey(id, word, category);
+            return map[key] === true;
+        }
+
+        function saveKnownStates() {
+            const map = getKnownMap();
+            words.forEach(item => {
+                const key = makeKnownKey(item.id, item.word, item.category);
+                map[key] = item.known === true;
+            });
+            saveKnownMap(map);
+        }
+
+        // 舊介面相容：現在只保存 known，不再保存整個單字庫
+        function saveToLocalStorageOnly() {
+            saveKnownStates();
+        }
+
+        function removeKnownState(id, word, category) {
+            const map = getKnownMap();
+            delete map[makeKnownKey(id, word, category)];
+            saveKnownMap(map);
+        }
+
+        function clearKnownStates() {
+            try {
+                localStorage.removeItem(KNOWN_STORAGE_KEY);
+            } catch (error) {
+                console.error("熟悉狀態清除失敗：", error);
+            }
+        }
+
+        // 舊版 LocalStorage 遷移：只取出 known，不再把整個單字庫當成本機資料來源
+        function migrateLegacyKnownStates() {
+            const existing = getKnownMap();
+            if (Object.keys(existing).length) return existing;
 
             try {
-                syncStatus.textContent = "狀態：☁️ 正在新增單字...";
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) return existing;
+                const oldWords = JSON.parse(raw);
+                if (!Array.isArray(oldWords)) return existing;
 
+                oldWords.forEach(item => {
+                    if (item && item.known === true) {
+                        existing[makeKnownKey(null, item.word, item.category)] = true;
+                    }
+                });
+                saveKnownMap(existing);
+            } catch (error) {
+                console.error("舊版熟悉狀態遷移失敗：", error);
+            }
+            return existing;
+        }
+
+        migrateLegacyKnownStates();
+
+        function applyKnownStates(rows) {
+            const map = getKnownMap();
+            return (rows || []).map(item => ({
+                ...item,
+                known: map[makeKnownKey(item.id, item.word, item.category)] === true ||
+                       map[makeKnownKey(null, item.word, item.category)] === true
+            }));
+        }
+
+        // =========================================================
+        // 雲端批次取代：只用於 JSON 匯入 / 預設字庫重置
+        // =========================================================
+
+        async function replaceCloudVocabulary(sourceWords) {
+            if (!supabaseClient) throw new Error("Supabase 未初始化");
+
+            syncStatus.textContent = "狀態：☁️ 正在更新雲端字庫...";
+
+            const { error: deleteError } = await supabaseClient
+                .from("vocabulary")
+                .delete()
+                .not("id", "is", null);
+            if (deleteError) throw deleteError;
+
+            const rows = (sourceWords || []).map(item => ({
+                word: String(item.word || ""),
+                meaning: String(item.meaning || ""),
+                example: String(item.example || ""),
+                category: String(item.category || "名詞")
+            })).filter(item => item.word && item.meaning);
+
+            if (rows.length) {
                 const { data, error } = await supabaseClient
                     .from("vocabulary")
-                    .insert({
-                        word: word.word,
-                        meaning: word.meaning,
-                        example: word.example || "",
-                        category: word.category || "其他"
-                    })
-                    .select("id, word, meaning, example, category, created_at")
-                    .single();
-
+                    .insert(rows)
+                    .select("id, word, meaning, example, category, created_at");
                 if (error) throw error;
-
-                if (data?.id) {
-                    word.id = data.id;
-                    cloudWordIds.add(data.id);
-                    // 新增時 known 仍只保存本機。
-                    knownStatuses[`id:${data.id}`] = word.known === true;
-                    saveKnownStatuses();
-                }
-
-                syncStatus.textContent =
-                    `狀態：🟢 已新增到雲端 (${new Date().toLocaleTimeString()})`;
-                return true;
-            } catch (error) {
-                showCloudError("新增", error);
-                return false;
+                words = applyKnownStates(data);
+            } else {
+                words = [];
             }
+
+            saveKnownStates();
+            updateCard();
+            syncStatus.textContent = `狀態：🟢 雲端字庫更新完成 (${new Date().toLocaleTimeString()})`;
         }
-
-
-        async function deleteWordFromSupabase(word) {
-            if (!supabaseClient || !word?.id) {
-                if (!word?.id) {
-                    syncStatus.textContent =
-                        "狀態：🟡 已從本機刪除（此單字尚無雲端 ID）";
-                }
-                return false;
-            }
-
-            try {
-                syncStatus.textContent = "狀態：☁️ 正在刪除單字...";
-
-                const { error } = await supabaseClient
-                    .from("vocabulary")
-                    .delete()
-                    .eq("id", word.id);
-
-                if (error) throw error;
-
-                cloudWordIds.delete(word.id);
-
-                syncStatus.textContent =
-                    `狀態：🟢 已從雲端刪除 (${new Date().toLocaleTimeString()})`;
-                return true;
-            } catch (error) {
-                showCloudError("刪除", error);
-                return false;
-            }
-        }
-
-
-        // 修改單字本體時使用；known 不會呼叫這個函式。
-        async function updateWordInSupabase(word) {
-            if (!supabaseClient || !word?.id) {
-                return false;
-            }
-
-            try {
-                syncStatus.textContent = "狀態：☁️ 正在更新單字...";
-
-                const { error } = await supabaseClient
-                    .from("vocabulary")
-                    .update({
-                        word: word.word,
-                        meaning: word.meaning,
-                        example: word.example || "",
-                        category: word.category || "其他"
-                    })
-                    .eq("id", word.id);
-
-                if (error) throw error;
-
-                syncStatus.textContent =
-                    `狀態：🟢 雲端更新成功 (${new Date().toLocaleTimeString()})`;
-                return true;
-            } catch (error) {
-                showCloudError("更新", error);
-                return false;
-            }
-        }
-
-
-        // 只有「匯入」與「單字重置」需要整批替換雲端資料。
-        async function replaceAllCloudWords() {
-            if (!supabaseClient) {
-                syncStatus.textContent =
-                    "狀態：⚠️ Supabase 未初始化，資料已保留在本機";
-                return false;
-            }
-
-            try {
-                syncStatus.textContent = "狀態：☁️ 正在更新整個雲端字庫...";
-
-                const { error: deleteError } = await supabaseClient
-                    .from("vocabulary")
-                    .delete()
-                    .neq("id", "00000000-0000-0000-0000-000000000000");
-
-                if (deleteError) throw deleteError;
-
-                const payload = words.map(word => ({
-                    word: word.word,
-                    meaning: word.meaning,
-                    example: word.example || "",
-                    category: word.category || "其他"
-                }));
-
-                if (payload.length > 0) {
-                    const { data, error: insertError } = await supabaseClient
-                        .from("vocabulary")
-                        .insert(payload)
-                        .select("id, word, meaning, example, category, created_at");
-
-                    if (insertError) throw insertError;
-
-                    // 重新把 Supabase ID 綁回本機單字。
-                    // 若排序一致，Supabase 回傳的 insert rows 對應相同順序。
-                    if (Array.isArray(data)) {
-                        data.forEach((item, index) => {
-                            if (words[index]) {
-                                words[index].id = item.id;
-                                knownStatuses[`id:${item.id}`] = words[index].known === true;
-                            }
-                        });
-                        saveKnownStatuses();
-                        cloudWordIds = new Set(data.map(item => item.id));
-                    }
-                } else {
-                    cloudWordIds = new Set();
-                }
-
-                syncStatus.textContent =
-                    `狀態：🟢 雲端字庫更新成功 (${new Date().toLocaleTimeString()})`;
-                return true;
-            } catch (error) {
-                showCloudError("同步", error);
-                return false;
-            }
-        }
-
-
-        // 保留舊函式名稱，避免舊按鈕/流程呼叫時變成整包逐筆上傳。
-        // 一般新增、刪除不會再呼叫它。
-        async function saveToSupabase() {
-            return replaceAllCloudWords();
-        }
-
 
         // =========================================================
-        // 從 Supabase 讀取
+        // 從 Supabase 讀取 + Realtime 即時同步
         // =========================================================
 
         async function loadFromSupabase() {
 
             if (!supabaseClient) {
-                syncStatus.textContent =
-                    "狀態：⚠️ Supabase SDK 載入失敗，無法載入雲端單字";
-                words = [];
+                syncStatus.textContent = "狀態：⚠️ Supabase SDK 載入失敗";
                 updateCard();
                 return;
             }
 
             isLoadingFromSupabase = true;
-
-            syncStatus.textContent =
-                "狀態：☁️ 正在讀取雲端資料...";
+            syncStatus.textContent = "狀態：☁️ 正在讀取雲端資料...";
 
             try {
                 const { data, error } = await supabaseClient
@@ -3270,44 +3042,83 @@
 
                 if (error) throw error;
 
-                // 單字本體以雲端為唯一來源。
-                words = Array.isArray(data)
-                    ? data.map(item => ({
-                        id: item.id,
-                        word: item.word,
-                        meaning: item.meaning,
-                        example: item.example || "",
-                        category: item.category || "其他",
-                        known: false
-                    }))
-                    : [];
-
-                // 熟悉狀態只從本機 LocalStorage 套用。
-                applyLocalKnownStatuses();
-
-                cloudWordIds = new Set(
-                    words.map(word => word.id).filter(Boolean)
-                );
-
+                words = applyKnownStates(data || []);
                 currentIndex = 0;
                 currentListPage = 1;
                 updateCard();
 
-                syncStatus.textContent =
-                    `狀態：🟢 已從雲端同步 ${words.length} 個單字；熟悉狀態使用本機儲存 (${new Date().toLocaleTimeString()})`;
+                syncStatus.textContent = `狀態：🟢 已從雲端同步 ${words.length} 個單字 (${new Date().toLocaleTimeString()})`;
 
             } catch (error) {
                 console.error("Supabase 讀取失敗：", error);
-                words = [];
+                syncStatus.textContent = "狀態：⚠️ 雲端讀取失敗，請檢查 Supabase 權限";
                 updateCard();
-                syncStatus.textContent =
-                    "狀態：⚠️ 雲端讀取失敗，沒有使用本機單字資料";
-
             } finally {
                 isLoadingFromSupabase = false;
             }
         }
 
+        function subscribeToVocabularyRealtime() {
+            if (!supabaseClient) return;
+
+            supabaseClient
+                .channel("vocabulary-realtime")
+                .on(
+                    "postgres_changes",
+                    {
+                        event: "*",
+                        schema: "public",
+                        table: "vocabulary"
+                    },
+                    payload => {
+                        console.log("Supabase Realtime：", payload.eventType, payload);
+
+                        if (payload.eventType === "INSERT") {
+                            const row = payload.new;
+                            if (!words.some(item => item.id === row.id)) {
+                                words.push(applyKnownStates([row])[0]);
+                            }
+                        }
+
+                        if (payload.eventType === "UPDATE") {
+                            const row = payload.new;
+                            const index = words.findIndex(item => item.id === row.id);
+                            const known = index !== -1 ? words[index].known : getKnownState(row.id, row.word, row.category);
+                            if (index !== -1) {
+                                words[index] = { ...row, known };
+                            } else {
+                                words.push({ ...row, known });
+                            }
+                        }
+
+                        if (payload.eventType === "DELETE") {
+                            const id = payload.old?.id;
+                            const index = words.findIndex(item => item.id === id);
+                            if (index !== -1) {
+                                const removed = words[index];
+                                words.splice(index, 1);
+                                removeKnownState(removed.id, removed.word, removed.category);
+                            }
+                        }
+
+                        saveKnownStates();
+                        const filteredWords = getFilteredWords();
+                        if (currentIndex >= filteredWords.length) {
+                            currentIndex = Math.max(0, filteredWords.length - 1);
+                        }
+                        const maxPage = Math.max(1, Math.ceil(filteredWords.length / itemsPerPage));
+                        if (currentListPage > maxPage) currentListPage = maxPage;
+                        updateCard();
+                        syncStatus.textContent = `狀態：🟢 雲端即時更新 (${new Date().toLocaleTimeString()})`;
+                    }
+                )
+                .subscribe(status => {
+                    console.log("Supabase Realtime 狀態：", status);
+                    if (status === "SUBSCRIBED") {
+                        syncStatus.textContent = "狀態：🟢 已連線 Realtime 即時同步";
+                    }
+                });
+        }
 
         // =========================================================
         // 鍵盤操作
@@ -3366,11 +3177,11 @@
         // 啟動
         // =========================================================
 
-        // 啟動時單字本體以雲端為準；LocalStorage 只提供熟悉狀態。
+        // 先顯示本機介面，再讀取雲端
         updateCard();
 
-
-        // 再嘗試讀取雲端
+        // 啟用 Supabase Realtime，再載入一次最新雲端資料
+        subscribeToVocabularyRealtime();
         loadFromSupabase();
 
     </script>
