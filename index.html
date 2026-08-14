@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>學測單字記憶卡 - 自動同步版</title>
@@ -1193,101 +1194,63 @@
             }
         }
 
-        // ==========================================
-        // GitHub API 雲端自動同步與初始化載入
-        // ==========================================
-        const GITHUB_TOKEN = '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'; 
-        const GITHUB_REPO = 'Smdqpzx/textV2';    
-        const GITHUB_PATH = 'vocab_backup.json';      
+       // ==========================================
+// Supabase 雲端同步整合
+// ==========================================
+// 注意：需在 <head> 中加入 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+const SUPABASE_URL = 'https://ojfhffofofqylkohryzp.supabase.co/rest/v1/';
+const SUPABASE_KEY = 'sb_publishable_btMT26lSBsTSTvlm1TArcQ_Uck7UxGn';
 
-        // 1. 網頁啟動時：嘗試從 GitHub 抓取雲端備份覆蓋本地
-        async function initCloudSync() {
-            try {
-                syncStatus.textContent = "狀態：正在從 GitHub 雲端同步最新單字...";
-                const getUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-                const response = await fetch(getUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github+json'
-                    }
-                });
+// 初始化 Supabase 客戶端
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-                if (response.ok) {
-                    const fileData = await response.json();
-                    // GitHub 傳回的 content 是 Base64 格式，需要解碼支援中文
-                    const jsonString = decodeURIComponent(escape(atob(fileData.content.replace(/\s/g, ''))));
-                    const remoteWords = JSON.parse(jsonString);
-                    if (Array.isArray(remoteWords) && remoteWords.length > 0) {
-                        words = remoteWords;
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-                        syncStatus.textContent = "狀態：🟢 已成功從 GitHub 載入最新雲端資料";
-                    }
-                } else {
-                    syncStatus.textContent = "狀態：⚠️ 找不到雲端檔案，使用本地資料";
-                }
-            } catch (error) {
-                console.error('初始化抓取 GitHub 失敗:', error);
-                syncStatus.textContent = "狀態：⚠️ 雲端連線失敗，目前使用本地離線資料";
-            }
-            // 載入完成後更新畫面
-            updateCard();
-        }
-
-        // 2. 資料變更時：自動推送到 GitHub
-        async function saveToLocalStorage() {
-            // 先儲存至本地瀏覽器
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+// 讀取資料
+async function loadFromSupabase() {
+    syncStatus.textContent = "狀態：正在讀取雲端資料...";
+    try {
+        const { data, error } = await supabase
+            .from('vocab_store')
+            .select('data')
+            .eq('id', 1)
+            .maybeSingle(); // 使用 maybeSingle 避免找不到資料時報錯
             
-            const now = new Date().toLocaleTimeString();
-            syncStatus.textContent = `狀態：本地已儲存，正在同步至 GitHub... (${now})`;
+        if (error) throw error;
 
-            try {
-                const getUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
-                const getResponse = await fetch(getUrl, {
-                    headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github+json'
-                    }
-                });
-
-                let fileSha = '';
-                if (getResponse.ok) {
-                    const fileData = await getResponse.json();
-                    fileSha = fileData.sha;
-                }
-
-                const jsonString = JSON.stringify(words, null, 2);
-                // 安全的中文 Base64 編碼轉換
-                const base64Content = btoa(unescape(encodeURIComponent(jsonString)));
-
-                const putResponse = await fetch(getUrl, {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${GITHUB_TOKEN}`,
-                        'Accept': 'application/vnd.github+json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        message: `Auto-sync vocabulary progress: ${now}`,
-                        content: base64Content,
-                        sha: fileSha
-                    })
-                });
-
-                if (!putResponse.ok) {
-                    throw new Error(`GitHub 同步失敗 (${putResponse.status})`);
-                }
-
-                syncStatus.textContent = `狀態：🟢 雲端 GitHub 同步成功 (${now})`;
-
-            } catch (error) {
-                console.error('GitHub 遠端同步錯誤:', error);
-                syncStatus.textContent = `狀態：⚠️ 僅存至本地，GitHub 同步失敗 (${now})`;
-            }
+        if (data && data.data) {
+            words = data.data; 
+            updateCard();      
+            syncStatus.textContent = "狀態：🟢 已從雲端同步";
         }
+    } catch (err) {
+        console.error("同步失敗:", err);
+        syncStatus.textContent = "狀態：⚠️ 讀取雲端資料失敗";
+    }
+}
 
-        // 啟動時執行雲端載入
-        initCloudSync();
+// 儲存資料到本地與雲端
+async function saveToLocalStorage() {
+    // 1. 存本地
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    
+    // 2. 存雲端
+    try {
+        const { error } = await supabase
+            .from('vocab_store')
+            .upsert({ id: 1, data: words });
+
+        if (error) throw error;
+        syncStatus.textContent = `狀態：🟢 雲端同步成功 (${new Date().toLocaleTimeString()})`;
+    } catch (err) {
+        console.error("雲端同步失敗:", err);
+        syncStatus.textContent = "狀態：⚠️ 雲端同步失敗";
+    }
+}
+
+// 初始化執行
+// 在呼叫 loadFromSupabase 之後，確保介面有初次更新
+loadFromSupabase().then(() => {
+    updateCard(); 
+});
     </script>
 </body>
 </html>
