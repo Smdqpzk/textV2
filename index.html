@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <title>學測單字記憶卡 - 自動同步版</title>
+
     <style>
         :root {
             --primary-color: #6366f1;
@@ -18,7 +22,8 @@
             --card-back-color: #312e81;
             --item-hover-bg: #f1f5f9;
             --current-item-bg: #eef2ff;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05),
+                       0 4px 6px -4px rgba(0, 0, 0, 0.05);
         }
 
         [data-theme="dark"] {
@@ -33,11 +38,17 @@
             --card-back-color: #e0e7ff;
             --item-hover-bg: #334155;
             --current-item-bg: #312e81;
-            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3),
+                       0 4px 6px -4px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont,
+                "Segoe UI", Roboto, sans-serif;
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
@@ -49,6 +60,12 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        button,
+        input,
+        select {
+            font-family: inherit;
+        }
+
         .container {
             width: 100%;
             max-width: 620px;
@@ -57,7 +74,7 @@
         h1 {
             text-align: center;
             color: var(--primary-color);
-            margin-bottom: 24px;
+            margin: 0 0 24px;
             font-size: 28px;
             font-weight: 800;
             letter-spacing: -0.5px;
@@ -115,9 +132,10 @@
             margin-bottom: 12px;
             text-align: right;
             font-weight: 500;
+            min-height: 18px;
         }
 
-        /* 篩選與搜尋列容器 */
+        /* 篩選與搜尋 */
         .filter-search-container {
             background: var(--card-bg);
             padding: 18px;
@@ -145,7 +163,8 @@
             width: 75px;
         }
 
-        .filter-row select, .filter-row input {
+        .filter-row select,
+        .filter-row input {
             flex: 1;
             padding: 9px 12px;
             border: 1px solid var(--border-color);
@@ -157,11 +176,12 @@
             transition: border-color 0.2s;
         }
 
-        .filter-row select:focus, .filter-row input:focus {
+        .filter-row select:focus,
+        .filter-row input:focus {
             border-color: var(--primary-color);
         }
 
-        /* 狀態按鈕群組設計 */
+        /* 狀態按鈕 */
         .status-buttons-group {
             display: flex;
             gap: 6px;
@@ -194,7 +214,7 @@
             box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
         }
 
-        /* 新增單字表單 */
+        /* 新增單字 */
         .add-card-form {
             background: var(--card-bg);
             padding: 20px 22px;
@@ -209,13 +229,14 @@
         }
 
         .add-card-form h3 {
-            margin: 0 0 4px 0;
+            margin: 0 0 4px;
             font-size: 16px;
             font-weight: 700;
             color: var(--text-color);
         }
 
-        .add-card-form input, .add-card-form select {
+        .add-card-form input,
+        .add-card-form select {
             padding: 10px 14px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-color);
@@ -226,7 +247,8 @@
             transition: border-color 0.2s;
         }
 
-        .add-card-form input:focus, .add-card-form select:focus {
+        .add-card-form input:focus,
+        .add-card-form select:focus {
             border-color: var(--primary-color);
         }
 
@@ -247,7 +269,7 @@
             transform: translateY(-1px);
         }
 
-        /* 統計與進度條 */
+        /* 統計 */
         .stats-section {
             background: var(--card-bg);
             padding: 16px 20px;
@@ -262,10 +284,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 8px;
             margin-bottom: 10px;
             font-size: 13px;
             font-weight: 600;
             color: var(--gray-color);
+            flex-wrap: wrap;
         }
 
         .progress-bar-container {
@@ -284,7 +308,7 @@
             transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 單字卡本體 */
+        /* 單字卡 */
         .flashcard-container {
             perspective: 1000px;
             width: 100%;
@@ -313,6 +337,7 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -321,7 +346,6 @@
             color: var(--text-color);
             border-radius: 20px;
             padding: 24px;
-            box-sizing: border-box;
             border: 1px solid var(--border-color);
             transition: background-color 0.3s, color 0.3s;
         }
@@ -338,6 +362,7 @@
             font-weight: 800;
             margin-bottom: 12px;
             letter-spacing: -0.5px;
+            word-break: break-word;
         }
 
         .badge-container {
@@ -363,6 +388,7 @@
             font-size: 26px;
             font-weight: 700;
             margin-bottom: 12px;
+            word-break: break-word;
         }
 
         .example {
@@ -370,6 +396,8 @@
             color: inherit;
             opacity: 0.9;
             font-style: italic;
+            max-width: 90%;
+            line-height: 1.6;
         }
 
         .hint {
@@ -379,7 +407,7 @@
             font-weight: 500;
         }
 
-        /* 按鈕控制區 */
+        /* 控制按鈕 */
         .controls {
             display: flex;
             gap: 10px;
@@ -409,7 +437,8 @@
             transform: scale(0.97);
         }
 
-        .btn-prev, .btn-next {
+        .btn-prev,
+        .btn-next {
             background-color: #64748b;
         }
 
@@ -421,7 +450,7 @@
             background-color: #ef4444;
         }
 
-        /* 頁碼式單字列表區 */
+        /* 單字列表 */
         .word-list {
             background: var(--card-bg);
             padding: 20px;
@@ -450,6 +479,7 @@
             font-size: 14px;
             border-radius: 8px;
             transition: background 0.15s;
+            gap: 8px;
         }
 
         .word-item:last-child {
@@ -463,10 +493,12 @@
             cursor: pointer;
             color: var(--text-color);
             flex: 1;
+            min-width: 0;
             padding: 4px 6px;
             border-radius: 6px;
             transition: background 0.2s;
             font-weight: 500;
+            line-height: 1.5;
         }
 
         .word-btn:hover {
@@ -484,13 +516,14 @@
             border-radius: 6px;
             font-weight: 600;
             transition: background 0.2s;
+            flex-shrink: 0;
         }
 
         .delete-btn:hover {
             background-color: rgba(239, 68, 68, 0.1);
         }
 
-        /* 頁碼按鈕導覽列 */
+        /* 分頁 */
         .pagination {
             display: flex;
             justify-content: center;
@@ -523,7 +556,7 @@
             border-color: var(--primary-color);
             box-shadow: 0 2px 4px rgba(99, 102, 241, 0.3);
         }
-        
+
         .page-ellipsis {
             padding: 6px 4px;
             color: var(--gray-color);
@@ -531,7 +564,7 @@
             font-weight: 600;
         }
 
-        /* 自訂 Modal 樣式 */
+        /* Modal */
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -546,6 +579,7 @@
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease;
+            padding: 20px;
         }
 
         .modal-overlay.active {
@@ -582,6 +616,7 @@
             font-size: 14px;
             color: var(--gray-color);
             margin-bottom: 20px;
+            word-break: break-word;
         }
 
         .modal-actions {
@@ -613,644 +648,2635 @@
             background-color: #ef4444;
             color: white;
         }
+
+        /* 手機版 */
+        @media (max-width: 520px) {
+            body {
+                padding: 20px 12px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .filter-row {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 7px;
+            }
+
+            .filter-row label {
+                width: auto;
+            }
+
+            .filter-row select,
+            .filter-row input {
+                width: 100%;
+            }
+
+            .status-buttons-group {
+                width: 100%;
+            }
+
+            .flashcard-container {
+                height: 240px;
+            }
+
+            .word {
+                font-size: 30px;
+            }
+
+            .meaning {
+                font-size: 23px;
+            }
+
+            .controls {
+                gap: 6px;
+            }
+
+            .controls button {
+                padding: 11px 6px;
+                font-size: 13px;
+            }
+
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
+
 <body data-theme="light">
 
     <div class="container">
+
         <h1>學測單字記憶卡</h1>
 
-        <!-- 自動同步狀態提示列 -->
-        <div id="syncStatus" class="sync-status">狀態：正在初始化連線...</div>
+        <!-- 同步狀態 -->
+        <div id="syncStatus" class="sync-status">
+            狀態：正在初始化...
+        </div>
 
-        <!-- 頂端功能列與同步按鈕 -->
+        <!-- 功能列 -->
         <div class="top-action-bar">
-            <span style="font-size: 13px; font-weight: 600; color: var(--gray-color);">⚙️ 資料管理</span>
+
+            <span style="font-size: 13px; font-weight: 600; color: var(--gray-color);">
+                ⚙️ 資料管理
+            </span>
+
             <div class="btn-group">
-                <button class="btn-action btn-theme" onclick="toggleTheme()" id="themeToggleBtn">🌙 深色模式</button>
-                <button class="btn-action btn-sync" onclick="exportData()">匯出</button>
-                <button class="btn-action btn-sync" onclick="document.getElementById('importFile').click()">匯入</button>
-                <input type="file" id="importFile" style="display: none;" accept=".json" onchange="importData(event)">
-                <button class="btn-action" onclick="loadDefaultWords()">單字重置</button>
+
+                <button
+                    class="btn-action btn-theme"
+                    onclick="toggleTheme()"
+                    id="themeToggleBtn">
+                    🌙 深色模式
+                </button>
+
+                <button
+                    class="btn-action btn-sync"
+                    onclick="exportData()">
+                    匯出
+                </button>
+
+                <button
+                    class="btn-action btn-sync"
+                    onclick="document.getElementById('importFile').click()">
+                    匯入
+                </button>
+
+                <input
+                    type="file"
+                    id="importFile"
+                    style="display: none;"
+                    accept=".json"
+                    onchange="importData(event)">
+
+                <button
+                    class="btn-action"
+                    onclick="loadDefaultWords()">
+                    單字重置
+                </button>
+
             </div>
         </div>
 
-        <!-- 篩選與搜尋列容器 -->
+        <!-- 篩選 -->
         <div class="filter-search-container">
+
             <div class="filter-row">
+
                 <label>背誦狀態</label>
+
                 <div class="status-buttons-group">
-                    <button class="filter-tab-btn active" id="statusBtn-all" onclick="setStatusFilter('all')">全部</button>
-                    <button class="filter-tab-btn" id="statusBtn-known" onclick="setStatusFilter('known')">🟢 已背熟</button>
-                    <button class="filter-tab-btn" id="statusBtn-unknown" onclick="setStatusFilter('unknown')">🔴 未背熟</button>
+
+                    <button
+                        class="filter-tab-btn active"
+                        id="statusBtn-all"
+                        onclick="setStatusFilter('all')">
+                        全部
+                    </button>
+
+                    <button
+                        class="filter-tab-btn"
+                        id="statusBtn-known"
+                        onclick="setStatusFilter('known')">
+                        🟢 已背熟
+                    </button>
+
+                    <button
+                        class="filter-tab-btn"
+                        id="statusBtn-unknown"
+                        onclick="setStatusFilter('unknown')">
+                        🔴 未背熟
+                    </button>
+
                 </div>
             </div>
+
             <div class="filter-row">
-                <label for="categoryFilter">詞性篩選</label>
-                <select id="categoryFilter" onchange="filterWords()">
-                    <option value="all">全部詞性 (All)</option>
-                    <option value="動詞">動詞 (Verb)</option>
-                    <option value="名詞">名詞 (Noun)</option>
-                    <option value="形容詞">形容詞 (Adjective)</option>
-                    <option value="副詞">副詞 (Adverb)</option>
-                    <option value="片語">片語 (Phrase)</option>
-                    <option value="轉折詞">轉折詞 (Transition)</option>
+
+                <label for="categoryFilter">
+                    詞性篩選
+                </label>
+
+                <select
+                    id="categoryFilter"
+                    onchange="filterWords()">
+
+                    <option value="all">
+                        全部詞性 (All)
+                    </option>
+
+                    <option value="動詞">
+                        動詞 (Verb)
+                    </option>
+
+                    <option value="名詞">
+                        名詞 (Noun)
+                    </option>
+
+                    <option value="形容詞">
+                        形容詞 (Adjective)
+                    </option>
+
+                    <option value="副詞">
+                        副詞 (Adverb)
+                    </option>
+
+                    <option value="片語">
+                        片語 (Phrase)
+                    </option>
+
+                    <option value="轉折詞">
+                        轉折詞 (Transition)
+                    </option>
+
                 </select>
             </div>
+
             <div class="filter-row">
-                <label for="searchInput">單字搜尋</label>
-                <input type="text" id="searchInput" placeholder="輸入關鍵字搜尋單字或中文..." oninput="filterWords()">
+
+                <label for="searchInput">
+                    單字搜尋
+                </label>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="輸入關鍵字搜尋單字或中文..."
+                    oninput="filterWords()">
+
             </div>
+
         </div>
 
-        <!-- 新增單字表單 -->
+        <!-- 新增單字 -->
         <div class="add-card-form">
+
             <h3>➕ 新增自訂單字</h3>
-            <input type="text" id="inputWord" placeholder="請輸入單字 (例: environment)">
-            <input type="text" id="inputMeaning" placeholder="請輸入中文意思 (例: 環境)">
-            <input type="text" id="inputExample" placeholder="請輸入例句 (選填)">
+
+            <input
+                type="text"
+                id="inputWord"
+                placeholder="請輸入單字 (例: environment)">
+
+            <input
+                type="text"
+                id="inputMeaning"
+                placeholder="請輸入中文意思 (例: 環境)">
+
+            <input
+                type="text"
+                id="inputExample"
+                placeholder="請輸入例句 (選填)">
+
             <select id="inputCategory">
-                <option value="動詞">動詞 (Verb)</option>
-                <option value="名詞">名詞 (Noun)</option>
-                <option value="形容詞">形容詞 (Adjective)</option>
-                <option value="副詞">副詞 (Adverb)</option>
-                <option value="片語">片語 (Phrase)</option>
-                <option value="轉折詞">轉折詞 (Transition)</option>
+
+                <option value="動詞">
+                    動詞 (Verb)
+                </option>
+
+                <option value="名詞">
+                    名詞 (Noun)
+                </option>
+
+                <option value="形容詞">
+                    形容詞 (Adjective)
+                </option>
+
+                <option value="副詞">
+                    副詞 (Adverb)
+                </option>
+
+                <option value="片語">
+                    片語 (Phrase)
+                </option>
+
+                <option value="轉折詞">
+                    轉折詞 (Transition)
+                </option>
+
             </select>
-            <button onclick="addWord()">新增到字庫</button>
+
+            <button onclick="addWord()">
+                新增到字庫
+            </button>
+
         </div>
 
-        <!-- 統計與進度條 -->
+        <!-- 統計 -->
         <div class="stats-section">
+
             <div class="stats-bar">
-                <span id="cardCount">進度: 0 / 0</span>
-                <span id="overallProgressText">整體背誦率: 0% (0/0)</span>
-                <span id="masteryStatus">狀態: 未背熟</span>
+
+                <span id="cardCount">
+                    進度: 0 / 0
+                </span>
+
+                <span id="overallProgressText">
+                    整體背誦率: 0% (0/0)
+                </span>
+
+                <span id="masteryStatus">
+                    狀態: 未背熟
+                </span>
+
             </div>
+
             <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressBarFill"></div>
+
+                <div
+                    class="progress-bar-fill"
+                    id="progressBarFill">
+                </div>
+
             </div>
+
         </div>
 
         <!-- 單字卡 -->
-        <div class="flashcard-container" onclick="flipCard()">
-            <div class="flashcard" id="flashcard">
+        <div
+            class="flashcard-container"
+            onclick="flipCard()">
+
+            <div
+                class="flashcard"
+                id="flashcard">
+
+                <!-- 正面 -->
                 <div class="card-face card-front">
+
                     <div class="badge-container">
-                        <span class="badge badge-pos" id="displayCategory">動詞</span>
+
+                        <span
+                            class="badge badge-pos"
+                            id="displayCategory">
+                            動詞
+                        </span>
+
                     </div>
-                    <div class="word" id="displayWord">載入中...</div>
-                    <div class="hint">💡 點擊卡片翻面看中文與例句</div>
+
+                    <div
+                        class="word"
+                        id="displayWord">
+                        載入中...
+                    </div>
+
+                    <div class="hint">
+                        💡 點擊卡片翻面看中文與例句
+                    </div>
+
                 </div>
+
+                <!-- 背面 -->
                 <div class="card-face card-back">
-                    <div class="meaning" id="displayMeaning">請稍候</div>
-                    <div class="example" id="displayExample"></div>
+
+                    <div
+                        class="meaning"
+                        id="displayMeaning">
+                        請稍候
+                    </div>
+
+                    <div
+                        class="example"
+                        id="displayExample">
+                    </div>
+
                 </div>
+
             </div>
+
         </div>
 
-        <!-- 控制按鈕 -->
+        <!-- 控制 -->
         <div class="controls">
-            <button class="btn-prev" onclick="prevCard()">上一張</button>
-            <button class="btn-unknown" onclick="markStatus(false)">❌ 未熟</button>
-            <button class="btn-known" onclick="markStatus(true)">✔️ 記住了</button>
-            <button class="btn-next" onclick="nextCard()">下一張</button>
+
+            <button
+                class="btn-prev"
+                onclick="prevCard()">
+                上一張
+            </button>
+
+            <button
+                class="btn-unknown"
+                onclick="markStatus(false)">
+                ❌ 未熟
+            </button>
+
+            <button
+                class="btn-known"
+                onclick="markStatus(true)">
+                ✔️ 記住了
+            </button>
+
+            <button
+                class="btn-next"
+                onclick="nextCard()">
+                下一張
+            </button>
+
         </div>
 
-        <!-- 頁碼式單字列表區 -->
+        <!-- 單字列表 -->
         <div class="word-list">
-            <h3>單字清單表（A-Z 排序）</h3>
-            <div id="wordListContainer">
-                <!-- 動態生成清單 -->
+
+            <h3>
+                單字清單表（A-Z 排序）
+            </h3>
+
+            <div id="wordListContainer"></div>
+
+            <div
+                class="pagination"
+                id="paginationContainer">
             </div>
-            <!-- 頁碼按鈕容器 -->
-            <div class="pagination" id="paginationContainer"></div>
+
         </div>
+
     </div>
 
-    <!-- 自訂刪除確認 Modal -->
-    <div class="modal-overlay" id="deleteModal">
+    <!-- 刪除 Modal -->
+    <div
+        class="modal-overlay"
+        id="deleteModal">
+
         <div class="modal-box">
-            <h3>確認刪除</h3>
-            <p id="deleteModalText">確定要刪除這個單字嗎？</p>
+
+            <h3>
+                確認刪除
+            </h3>
+
+            <p id="deleteModalText">
+                確定要刪除這個單字嗎？
+            </p>
+
             <div class="modal-actions">
-                <button class="btn-modal-cancel" onclick="closeDeleteModal()">取消</button>
-                <button class="btn-modal-confirm" id="confirmDeleteBtn">確定刪除</button>
+
+                <button
+                    class="btn-modal-cancel"
+                    onclick="closeDeleteModal()">
+                    取消
+                </button>
+
+                <button
+                    class="btn-modal-confirm"
+                    id="confirmDeleteBtn">
+                    確定刪除
+                </button>
+
             </div>
+
         </div>
+
     </div>
+
 
     <script>
+
+        // =========================================================
+        // 預設單字
+        // =========================================================
+
         const defaultCsatWords = [
-            { word: "Acknowledge", meaning: "承認；感謝", example: "He acknowledged his mistake.", category: "動詞", known: false },
-            { word: "Benefit", meaning: "對...有益；獲益", example: "Reading books benefits our minds.", category: "動詞", known: false },
-            { word: "Calculate", meaning: "計算", example: "Can you calculate the total cost?", category: "動詞", known: false },
-            { word: "Determine", meaning: "決定；決心", example: "She is determined to pass the exam.", category: "動詞", known: false },
-            { word: "Environment", meaning: "環境", example: "We should protect our natural environment.", category: "名詞", known: false },
-            { word: "Furthermore", meaning: "此外；再者", example: "The plan is risky. Furthermore, it is too expensive.", category: "轉折詞", known: false },
-            { word: "Generate", meaning: "產生；引起", example: "The solar panels generate electricity.", category: "動詞", known: false },
-            { word: "However", meaning: "然而；不過", example: "He tried hard; however, he failed.", category: "轉折詞", known: false },
-            { word: "In addition", meaning: "此外", example: "In addition, she speaks fluent French.", category: "片語", known: false },
-            { word: "Journal", meaning: "雜誌；期刊；日誌", example: "She keeps a daily journal.", category: "名詞", known: false },
-            { word: "Maximum", meaning: "最大值；最大量的", example: "The maximum speed limit is 100 km/h.", category: "副詞", known: false },
-            { word: "Negotiate", meaning: "談判；協商", example: "The two countries agreed to negotiate.", category: "動詞", known: false },
-            { word: "Obvious", meaning: "明顯的", example: "It was obvious that he was tired.", category: "形容詞", known: false },
-            { word: "Participate", meaning: "參與；參加", example: "Everyone is encouraged to participate in the discussion.", category: "動詞", known: false },
-            { word: "Significant", meaning: "重要的；顯著的", example: "There has been a significant change in weather.", category: "形容詞", known: false },
-            { word: "Technology", meaning: "科技", example: "Modern technology makes our lives easier.", category: "名詞", known: false },
-            { word: "Unique", meaning: "獨特的", example: "Every snowflake has a unique shape.", category: "形容詞", known: false },
-            { word: "Valuable", meaning: "有價值的；寶貴的", example: "Time is more valuable than money.", category: "形容詞", known: false },
-            { word: "As a result", meaning: "因此；結果", example: "It rained heavily; as a result, the game was canceled.", category: "片語", known: false }
+
+            {
+                word: "Acknowledge",
+                meaning: "承認；感謝",
+                example: "He acknowledged his mistake.",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "Benefit",
+                meaning: "對...有益；獲益",
+                example: "Reading books benefits our minds.",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "Calculate",
+                meaning: "計算",
+                example: "Can you calculate the total cost?",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "Determine",
+                meaning: "決定；決心",
+                example: "She is determined to pass the exam.",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "Environment",
+                meaning: "環境",
+                example: "We should protect our natural environment.",
+                category: "名詞",
+                known: false
+            },
+
+            {
+                word: "Furthermore",
+                meaning: "此外；再者",
+                example: "The plan is risky. Furthermore, it is too expensive.",
+                category: "轉折詞",
+                known: false
+            },
+
+            {
+                word: "Generate",
+                meaning: "產生；引起",
+                example: "The solar panels generate electricity.",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "However",
+                meaning: "然而；不過",
+                example: "He tried hard; however, he failed.",
+                category: "轉折詞",
+                known: false
+            },
+
+            {
+                word: "In addition",
+                meaning: "此外",
+                example: "In addition, she speaks fluent French.",
+                category: "片語",
+                known: false
+            },
+
+            {
+                word: "Journal",
+                meaning: "雜誌；期刊；日誌",
+                example: "She keeps a daily journal.",
+                category: "名詞",
+                known: false
+            },
+
+            {
+                word: "Maximum",
+                meaning: "最大值；最大量的",
+                example: "The maximum speed limit is 100 km/h.",
+                category: "形容詞",
+                known: false
+            },
+
+            {
+                word: "Negotiate",
+                meaning: "談判；協商",
+                example: "The two countries agreed to negotiate.",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "Obvious",
+                meaning: "明顯的",
+                example: "It was obvious that he was tired.",
+                category: "形容詞",
+                known: false
+            },
+
+            {
+                word: "Participate",
+                meaning: "參與；參加",
+                example: "Everyone is encouraged to participate in the discussion.",
+                category: "動詞",
+                known: false
+            },
+
+            {
+                word: "Significant",
+                meaning: "重要的；顯著的",
+                example: "There has been a significant change in weather.",
+                category: "形容詞",
+                known: false
+            },
+
+            {
+                word: "Technology",
+                meaning: "科技",
+                example: "Modern technology makes our lives easier.",
+                category: "名詞",
+                known: false
+            },
+
+            {
+                word: "Unique",
+                meaning: "獨特的",
+                example: "Every snowflake has a unique shape.",
+                category: "形容詞",
+                known: false
+            },
+
+            {
+                word: "Valuable",
+                meaning: "有價值的；寶貴的",
+                example: "Time is more valuable than money.",
+                category: "形容詞",
+                known: false
+            },
+
+            {
+                word: "As a result",
+                meaning: "因此；結果",
+                example: "It rained heavily; as a result, the game was canceled.",
+                category: "片語",
+                known: false
+            }
+
         ];
 
-        const STORAGE_KEY = 'csat_vocabulary_permanent_storage_v5';
-        const THEME_KEY = 'csat_vocabulary_permanent_theme_v5';
 
-        let words = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultCsatWords;
-        let currentTheme = localStorage.getItem(THEME_KEY) || 'light';
+        // =========================================================
+        // 設定
+        // =========================================================
+
+        const STORAGE_KEY =
+            "csat_vocabulary_permanent_storage_v5";
+
+        const THEME_KEY =
+            "csat_vocabulary_permanent_theme_v5";
+
+
+        // =========================================================
+        // Supabase 設定
+        // =========================================================
+
+        const SUPABASE_URL =
+            "https://ojfhffofofqylkohryzp.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_btMT26lSBsTSTvlm1TArcQ_Uck7UxGn";
+
+
+        // =========================================================
+        // Supabase Client
+        // =========================================================
+
+        let supabaseClient = null;
+
+        if (
+            window.supabase &&
+            typeof window.supabase.createClient === "function"
+        ) {
+            supabaseClient =
+                window.supabase.createClient(
+                    SUPABASE_URL,
+                    SUPABASE_KEY
+                );
+        }
+
+
+        // =========================================================
+        // 初始資料
+        // =========================================================
+
+        function getDefaultWords() {
+            return JSON.parse(
+                JSON.stringify(defaultCsatWords)
+            );
+        }
+
+
+        function getLocalWords() {
+
+            try {
+
+                const saved =
+                    localStorage.getItem(STORAGE_KEY);
+
+                if (!saved) {
+                    return getDefaultWords();
+                }
+
+                const parsed =
+                    JSON.parse(saved);
+
+                if (Array.isArray(parsed)) {
+                    return parsed;
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "讀取 LocalStorage 失敗：",
+                    error
+                );
+
+            }
+
+            return getDefaultWords();
+        }
+
+
+        let words = getLocalWords();
+
+        let currentTheme =
+            localStorage.getItem(THEME_KEY) || "light";
 
         let currentIndex = 0;
+
         let isFlipped = false;
-        let currentStatusFilter = 'all';
-        
+
+        let currentStatusFilter = "all";
+
         let currentListPage = 1;
+
         const itemsPerPage = 5;
+
         let pendingDeleteTarget = null;
 
-        const flashcard = document.getElementById('flashcard');
-        const displayWord = document.getElementById('displayWord');
-        const displayMeaning = document.getElementById('displayMeaning');
-        const displayExample = document.getElementById('displayExample');
-        const displayCategory = document.getElementById('displayCategory');
-        const cardCount = document.getElementById('cardCount');
-        const masteryStatus = document.getElementById('masteryStatus');
-        const wordListContainer = document.getElementById('wordListContainer');
-        const paginationContainer = document.getElementById('paginationContainer');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const searchInput = document.getElementById('searchInput');
-        const themeToggleBtn = document.getElementById('themeToggleBtn');
-        const overallProgressText = document.getElementById('overallProgressText');
-        const progressBarFill = document.getElementById('progressBarFill');
-        const deleteModal = document.getElementById('deleteModal');
-        const deleteModalText = document.getElementById('deleteModalText');
-        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-        const syncStatus = document.getElementById('syncStatus');
+        let isLoadingFromSupabase = false;
+
+        let saveTimer = null;
+
+
+        // =========================================================
+        // DOM
+        // =========================================================
+
+        const flashcard =
+            document.getElementById("flashcard");
+
+        const displayWord =
+            document.getElementById("displayWord");
+
+        const displayMeaning =
+            document.getElementById("displayMeaning");
+
+        const displayExample =
+            document.getElementById("displayExample");
+
+        const displayCategory =
+            document.getElementById("displayCategory");
+
+        const cardCount =
+            document.getElementById("cardCount");
+
+        const masteryStatus =
+            document.getElementById("masteryStatus");
+
+        const wordListContainer =
+            document.getElementById("wordListContainer");
+
+        const paginationContainer =
+            document.getElementById("paginationContainer");
+
+        const categoryFilter =
+            document.getElementById("categoryFilter");
+
+        const searchInput =
+            document.getElementById("searchInput");
+
+        const themeToggleBtn =
+            document.getElementById("themeToggleBtn");
+
+        const overallProgressText =
+            document.getElementById("overallProgressText");
+
+        const progressBarFill =
+            document.getElementById("progressBarFill");
+
+        const deleteModal =
+            document.getElementById("deleteModal");
+
+        const deleteModalText =
+            document.getElementById("deleteModalText");
+
+        const confirmDeleteBtn =
+            document.getElementById("confirmDeleteBtn");
+
+        const syncStatus =
+            document.getElementById("syncStatus");
+
+
+        // =========================================================
+        // Theme
+        // =========================================================
 
         function setTheme(theme) {
+
             currentTheme = theme;
-            document.body.setAttribute('data-theme', theme);
-            localStorage.setItem(THEME_KEY, theme);
-            if (theme === 'dark') {
-                themeToggleBtn.textContent = '☀️ 淺色模式';
+
+            document.body.setAttribute(
+                "data-theme",
+                theme
+            );
+
+            localStorage.setItem(
+                THEME_KEY,
+                theme
+            );
+
+            if (theme === "dark") {
+
+                themeToggleBtn.textContent =
+                    "☀️ 淺色模式";
+
             } else {
-                themeToggleBtn.textContent = '🌙 深色模式';
+
+                themeToggleBtn.textContent =
+                    "🌙 深色模式";
+
             }
         }
 
+
         function toggleTheme() {
-            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+
+            setTheme(
+                currentTheme === "light"
+                    ? "dark"
+                    : "light"
+            );
+
         }
+
 
         setTheme(currentTheme);
 
+
+        // =========================================================
+        // 狀態篩選
+        // =========================================================
+
         function setStatusFilter(status) {
+
             currentStatusFilter = status;
-            document.querySelectorAll('.filter-tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById(`statusBtn-${status}`).classList.add('active');
+
+            document
+                .querySelectorAll(".filter-tab-btn")
+                .forEach(btn => {
+                    btn.classList.remove("active");
+                });
+
+            const targetButton =
+                document.getElementById(
+                    `statusBtn-${status}`
+                );
+
+            if (targetButton) {
+                targetButton.classList.add("active");
+            }
+
             filterWords();
         }
 
+
+        // =========================================================
+        // 取得篩選後單字
+        // =========================================================
+
         function getFilteredWords() {
-            let filtered = words;
-            
-            if (currentStatusFilter === 'known') {
-                filtered = filtered.filter(item => item.known === true);
-            } else if (currentStatusFilter === 'unknown') {
-                filtered = filtered.filter(item => item.known === false);
+
+            let filtered = [...words];
+
+
+            // 背誦狀態
+            if (currentStatusFilter === "known") {
+
+                filtered =
+                    filtered.filter(
+                        item => item.known === true
+                    );
+
+            } else if (
+                currentStatusFilter === "unknown"
+            ) {
+
+                filtered =
+                    filtered.filter(
+                        item => item.known !== true
+                    );
+
             }
 
-            const cVal = categoryFilter.value;
-            if (cVal !== 'all') {
-                filtered = filtered.filter(item => item.category === cVal);
+
+            // 詞性
+            const categoryValue =
+                categoryFilter.value;
+
+            if (categoryValue !== "all") {
+
+                filtered =
+                    filtered.filter(
+                        item =>
+                            item.category === categoryValue
+                    );
+
             }
 
-            const keyword = searchInput.value.trim().toLowerCase();
-            if (keyword !== '') {
-                filtered = filtered.filter(item => 
-                    item.word.toLowerCase().includes(keyword) || 
-                    item.meaning.toLowerCase().includes(keyword)
-                );
+
+            // 搜尋
+            const keyword =
+                searchInput.value
+                    .trim()
+                    .toLowerCase();
+
+            if (keyword !== "") {
+
+                filtered =
+                    filtered.filter(item => {
+
+                        const word =
+                            String(item.word || "")
+                                .toLowerCase();
+
+                        const meaning =
+                            String(item.meaning || "")
+                                .toLowerCase();
+
+                        const example =
+                            String(item.example || "")
+                                .toLowerCase();
+
+                        return (
+                            word.includes(keyword) ||
+                            meaning.includes(keyword) ||
+                            example.includes(keyword)
+                        );
+
+                    });
+
             }
 
-            return [...filtered].sort((a, b) => a.word.localeCompare(b.word, 'en', { sensitivity: 'base' }));
+
+            // A-Z
+            filtered.sort((a, b) =>
+                String(a.word || "").localeCompare(
+                    String(b.word || ""),
+                    "en",
+                    {
+                        sensitivity: "base"
+                    }
+                )
+            );
+
+
+            return filtered;
         }
 
+
+        // =========================================================
+        // 篩選
+        // =========================================================
+
         function filterWords() {
+
             currentIndex = 0;
+
             currentListPage = 1;
+
+            isFlipped = false;
+
+            flashcard.classList.remove(
+                "flipped"
+            );
+
             updateCard();
         }
 
+
+        // =========================================================
+        // 整體進度
+        // =========================================================
+
         function updateOverallProgress() {
-            const cVal = categoryFilter.value;
+
+            const categoryValue =
+                categoryFilter.value;
+
             let targetGroup = words;
+
             let labelPrefix = "整體";
 
-            if (cVal !== 'all') {
-                targetGroup = words.filter(w => w.category === cVal);
-                labelPrefix = cVal;
+
+            if (categoryValue !== "all") {
+
+                targetGroup =
+                    words.filter(
+                        word =>
+                            word.category === categoryValue
+                    );
+
+                labelPrefix = categoryValue;
             }
 
-            const total = targetGroup.length;
-            let knownCount = 0;
+
+            const total =
+                targetGroup.length;
+
+            const knownCount =
+                targetGroup.filter(
+                    word => word.known === true
+                ).length;
+
+            const unknownCount =
+                total - knownCount;
+
             let percentage = 0;
 
-            if (currentStatusFilter === 'known') {
-                knownCount = targetGroup.filter(w => w.known).length;
-                percentage = total > 0 ? Math.round((knownCount / total) * 100) : 0;
-                overallProgressText.textContent = `${labelPrefix}已背熟率: ${percentage}% (${knownCount}/${total})`;
-            } else if (currentStatusFilter === 'unknown') {
-                const unknownCount = targetGroup.filter(w => !w.known).length;
-                percentage = total > 0 ? Math.round((unknownCount / total) * 100) : 0;
-                overallProgressText.textContent = `${labelPrefix}未背熟率: ${percentage}% (${unknownCount}/${total})`;
+
+            if (currentStatusFilter === "known") {
+
+                percentage =
+                    total > 0
+                        ? Math.round(
+                            (knownCount / total) * 100
+                        )
+                        : 0;
+
+                overallProgressText.textContent =
+                    `${labelPrefix}已背熟率: ${percentage}% (${knownCount}/${total})`;
+
+            } else if (
+                currentStatusFilter === "unknown"
+            ) {
+
+                percentage =
+                    total > 0
+                        ? Math.round(
+                            (unknownCount / total) * 100
+                        )
+                        : 0;
+
+                overallProgressText.textContent =
+                    `${labelPrefix}未背熟率: ${percentage}% (${unknownCount}/${total})`;
+
             } else {
-                knownCount = targetGroup.filter(w => w.known).length;
-                percentage = total > 0 ? Math.round((knownCount / total) * 100) : 0;
-                overallProgressText.textContent = `${labelPrefix}背誦率: ${percentage}% (${knownCount}/${total})`;
+
+                percentage =
+                    total > 0
+                        ? Math.round(
+                            (knownCount / total) * 100
+                        )
+                        : 0;
+
+                overallProgressText.textContent =
+                    `${labelPrefix}背誦率: ${percentage}% (${knownCount}/${total})`;
             }
 
-            progressBarFill.style.width = `${percentage}%`;
+
+            progressBarFill.style.width =
+                `${percentage}%`;
         }
 
+
+        // =========================================================
+        // 更新卡片
+        // =========================================================
+
         function updateCard() {
-            const filteredWords = getFilteredWords();
+
+            const filteredWords =
+                getFilteredWords();
+
+
             updateOverallProgress();
 
+
+            // 沒有符合條件的單字
             if (filteredWords.length === 0) {
-                displayWord.textContent = "查無符合單字";
-                displayMeaning.textContent = "請調整篩選或搜尋條件";
-                displayExample.textContent = "";
-                displayCategory.textContent = "提示";
-                cardCount.textContent = "進度: 0 / 0";
-                masteryStatus.textContent = "狀態: 無";
+
+                displayWord.textContent =
+                    "查無符合單字";
+
+                displayMeaning.textContent =
+                    "請調整篩選或搜尋條件";
+
+                displayExample.textContent =
+                    "";
+
+                displayCategory.textContent =
+                    "提示";
+
+                cardCount.textContent =
+                    "進度: 0 / 0";
+
+                masteryStatus.textContent =
+                    "狀態: 無";
+
+                isFlipped = false;
+
+                flashcard.classList.remove(
+                    "flipped"
+                );
+
                 renderWordList();
+
+                saveToLocalStorageOnly();
+
                 return;
             }
 
-            if (currentIndex >= filteredWords.length) currentIndex = 0;
-            if (currentIndex < 0) currentIndex = filteredWords.length - 1;
 
-            const targetPage = Math.floor(currentIndex / itemsPerPage) + 1;
-            if (targetPage !== currentListPage) {
-                currentListPage = targetPage;
+            // 保持 Index 合法
+            if (
+                currentIndex >=
+                filteredWords.length
+            ) {
+                currentIndex = 0;
             }
 
-            const current = filteredWords[currentIndex];
-            displayWord.textContent = current.word;
-            displayMeaning.textContent = current.meaning;
-            displayExample.textContent = current.example || "";
-            displayCategory.textContent = current.category || "動詞";
-            
-            cardCount.textContent = `進度: ${currentIndex + 1} / ${filteredWords.length}`;
-            masteryStatus.textContent = current.known ? "狀態: 🟢 已記住" : "狀態: 🔴 未背熟";
-            
+            if (currentIndex < 0) {
+                currentIndex =
+                    filteredWords.length - 1;
+            }
+
+
+            // 自動調整目前頁碼
+            const targetPage =
+                Math.floor(
+                    currentIndex / itemsPerPage
+                ) + 1;
+
+            currentListPage =
+                targetPage;
+
+
+            const current =
+                filteredWords[currentIndex];
+
+
+            // 顯示卡片
+            displayWord.textContent =
+                current.word || "";
+
+            displayMeaning.textContent =
+                current.meaning || "";
+
+            displayExample.textContent =
+                current.example || "";
+
+            displayCategory.textContent =
+                current.category || "未分類";
+
+
+            // 進度
+            cardCount.textContent =
+                `進度: ${currentIndex + 1} / ${filteredWords.length}`;
+
+
+            // 狀態
+            masteryStatus.textContent =
+                current.known === true
+                    ? "狀態: 🟢 已記住"
+                    : "狀態: 🔴 未背熟";
+
+
+            // 換單字時回到正面
             if (isFlipped) {
-                flashcard.classList.remove('flipped');
+
+                flashcard.classList.remove(
+                    "flipped"
+                );
+
                 isFlipped = false;
             }
 
+
             renderWordList();
-            saveToLocalStorage();
+
+            // 本機儲存
+            saveToLocalStorageOnly();
         }
+
+
+        // =========================================================
+        // 翻牌
+        // =========================================================
 
         function flipCard() {
-            const filteredWords = getFilteredWords();
-            if (filteredWords.length === 0) return;
-            flashcard.classList.toggle('flipped');
-            isFlipped = !isFlipped;
+
+            const filteredWords =
+                getFilteredWords();
+
+            if (filteredWords.length === 0) {
+                return;
+            }
+
+            flashcard.classList.toggle(
+                "flipped"
+            );
+
+            isFlipped =
+                !isFlipped;
         }
+
+
+        // =========================================================
+        // 下一張
+        // =========================================================
 
         function nextCard() {
-            const filteredWords = getFilteredWords();
-            if (filteredWords.length === 0) return;
-            currentIndex = (currentIndex + 1) % filteredWords.length;
+
+            const filteredWords =
+                getFilteredWords();
+
+            if (filteredWords.length === 0) {
+                return;
+            }
+
+            currentIndex =
+                (currentIndex + 1) %
+                filteredWords.length;
+
             updateCard();
         }
+
+
+        // =========================================================
+        // 上一張
+        // =========================================================
 
         function prevCard() {
-            const filteredWords = getFilteredWords();
-            if (filteredWords.length === 0) return;
-            currentIndex = (currentIndex - 1 + filteredWords.length) % filteredWords.length;
+
+            const filteredWords =
+                getFilteredWords();
+
+            if (filteredWords.length === 0) {
+                return;
+            }
+
+            currentIndex =
+                (
+                    currentIndex -
+                    1 +
+                    filteredWords.length
+                ) %
+                filteredWords.length;
+
             updateCard();
         }
 
-        function jumpToWord(wordText, categoryText) {
-            const filteredWords = getFilteredWords();
-            const targetIndex = filteredWords.findIndex(w => w.word === wordText && w.category === categoryText);
+
+        // =========================================================
+        // 跳到指定單字
+        // =========================================================
+
+        function jumpToWord(
+            wordText,
+            categoryText
+        ) {
+
+            const filteredWords =
+                getFilteredWords();
+
+            const targetIndex =
+                filteredWords.findIndex(
+                    item =>
+                        item.word === wordText &&
+                        item.category === categoryText
+                );
+
             if (targetIndex !== -1) {
-                currentIndex = targetIndex;
+
+                currentIndex =
+                    targetIndex;
+
                 updateCard();
             }
         }
 
+
+        // =========================================================
+        // 分頁
+        // =========================================================
+
         function changePage(page) {
-            currentListPage = page;
+
+            currentListPage =
+                Number(page);
+
             renderWordList();
         }
 
+
+        // =========================================================
+        // 標記熟悉程度
+        // =========================================================
+
         function markStatus(status) {
-            const filteredWords = getFilteredWords();
-            if (filteredWords.length === 0) return;
-            
-            const targetWord = filteredWords[currentIndex];
-            const originalIndex = words.findIndex(w => w.word === targetWord.word && w.category === targetWord.category);
-            if (originalIndex !== -1) {
-                words[originalIndex].known = status;
+
+            const filteredWords =
+                getFilteredWords();
+
+            if (filteredWords.length === 0) {
+                return;
             }
 
+
+            const targetWord =
+                filteredWords[currentIndex];
+
+
+            const originalIndex =
+                words.findIndex(
+                    item =>
+                        item.word === targetWord.word &&
+                        item.category === targetWord.category
+                );
+
+
+            if (originalIndex !== -1) {
+
+                words[originalIndex].known =
+                    status;
+
+                saveToLocalStorageOnly();
+
+                scheduleCloudSave();
+            }
+
+
             updateCard();
-            if (status && currentIndex < filteredWords.length - 1) {
-                nextCard(); 
+
+
+            // 按「記住了」後自動下一張
+            if (
+                status === true &&
+                currentIndex <
+                filteredWords.length - 1
+            ) {
+
+                nextCard();
             }
         }
+
+
+        // =========================================================
+        // 新增單字
+        // =========================================================
 
         function addWord() {
-            const wordInput = document.getElementById('inputWord');
-            const meaningInput = document.getElementById('inputMeaning');
-            const exampleInput = document.getElementById('inputExample');
-            const categoryInput = document.getElementById('inputCategory');
 
-            const newWordValue = wordInput.value.trim();
-            const newMeaningValue = meaningInput.value.trim();
-            const newCategoryValue = categoryInput.value;
+            const wordInput =
+                document.getElementById(
+                    "inputWord"
+                );
 
-            if (!newWordValue || !newMeaningValue) {
-                alert("請至少填寫「單字」與「中文意思」！");
+            const meaningInput =
+                document.getElementById(
+                    "inputMeaning"
+                );
+
+            const exampleInput =
+                document.getElementById(
+                    "inputExample"
+                );
+
+            const categoryInput =
+                document.getElementById(
+                    "inputCategory"
+                );
+
+
+            const newWordValue =
+                wordInput.value.trim();
+
+            const newMeaningValue =
+                meaningInput.value.trim();
+
+            const newExampleValue =
+                exampleInput.value.trim();
+
+            const newCategoryValue =
+                categoryInput.value;
+
+
+            if (
+                !newWordValue ||
+                !newMeaningValue
+            ) {
+
+                alert(
+                    "請至少填寫「單字」與「中文意思」！"
+                );
+
                 return;
             }
 
-            const isDuplicate = words.some(item => 
-                item.word.toLowerCase() === newWordValue.toLowerCase() && 
-                item.category === newCategoryValue
-            );
+
+            // 檢查重複
+            const isDuplicate =
+                words.some(
+                    item =>
+                        String(item.word)
+                            .toLowerCase() ===
+                        newWordValue.toLowerCase() &&
+                        item.category ===
+                        newCategoryValue
+                );
+
 
             if (isDuplicate) {
-                alert(`字庫中已經存在相同詞性（${newCategoryValue}）的「${newWordValue}」了！`);
+
+                alert(
+                    `字庫中已經存在相同詞性（${newCategoryValue}）的「${newWordValue}」了！`
+                );
+
                 return;
             }
 
+
+            // 新增
             words.push({
+
                 word: newWordValue,
+
                 meaning: newMeaningValue,
-                example: exampleInput.value.trim(),
+
+                example: newExampleValue,
+
                 category: newCategoryValue,
+
                 known: false
+
             });
 
+
+            // 清空表單
             wordInput.value = "";
+
             meaningInput.value = "";
+
             exampleInput.value = "";
 
-            categoryFilter.value = newCategoryValue;
-            setStatusFilter('all');
-            searchInput.value = ""; 
-            
-            const filteredWords = getFilteredWords();
-            const newIndex = filteredWords.findIndex(w => w.word === newWordValue && w.category === newCategoryValue);
+
+            // 自動切到新增的詞性
+            categoryFilter.value =
+                newCategoryValue;
+
+            currentStatusFilter =
+                "all";
+
+            document
+                .querySelectorAll(".filter-tab-btn")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            document
+                .getElementById("statusBtn-all")
+                .classList.add("active");
+
+            searchInput.value = "";
+
+
+            // 找到新單字位置
+            const filteredWords =
+                getFilteredWords();
+
+            const newIndex =
+                filteredWords.findIndex(
+                    item =>
+                        item.word === newWordValue &&
+                        item.category === newCategoryValue
+                );
+
+
             if (newIndex !== -1) {
-                currentIndex = newIndex;
-                currentListPage = Math.floor(newIndex / itemsPerPage) + 1;
+
+                currentIndex =
+                    newIndex;
+
+                currentListPage =
+                    Math.floor(
+                        newIndex /
+                        itemsPerPage
+                    ) + 1;
             }
+
+
             updateCard();
+
+            scheduleCloudSave();
+
+
+            syncStatus.textContent =
+                "狀態：🟡 已新增單字，正在同步...";
         }
 
-        function promptDeleteWord(wordText, categoryText) {
-            pendingDeleteTarget = { word: wordText, category: categoryText };
-            deleteModalText.textContent = `確定要刪除 [${categoryText}] ${wordText} 嗎？`;
-            deleteModal.classList.add('active');
+
+        // =========================================================
+        // 刪除確認
+        // =========================================================
+
+        function promptDeleteWord(
+            wordText,
+            categoryText
+        ) {
+
+            pendingDeleteTarget = {
+                word: wordText,
+                category: categoryText
+            };
+
+
+            deleteModalText.textContent =
+                `確定要刪除 [${categoryText}] ${wordText} 嗎？`;
+
+
+            deleteModal.classList.add(
+                "active"
+            );
         }
+
+
+        // =========================================================
+        // 關閉刪除 Modal
+        // =========================================================
 
         function closeDeleteModal() {
-            deleteModal.classList.remove('active');
-            pendingDeleteTarget = null;
+
+            deleteModal.classList.remove(
+                "active"
+            );
+
+            pendingDeleteTarget =
+                null;
         }
 
-        confirmDeleteBtn.onclick = function() {
-            if (!pendingDeleteTarget) return;
-            const { word: wordText, category: categoryText } = pendingDeleteTarget;
-            
-            const originalIndex = words.findIndex(w => w.word === wordText && w.category === categoryText);
-            if (originalIndex !== -1) {
-                words.splice(originalIndex, 1);
+
+        // 點背景也可以關閉
+        deleteModal.addEventListener(
+            "click",
+            event => {
+
+                if (
+                    event.target ===
+                    deleteModal
+                ) {
+                    closeDeleteModal();
+                }
+
             }
-            
-            closeDeleteModal();
-            
-            const filteredWords = getFilteredWords();
-            if (currentIndex >= filteredWords.length) {
-                currentIndex = Math.max(0, filteredWords.length - 1);
-            }
-            const maxPage = Math.max(1, Math.ceil(filteredWords.length / itemsPerPage));
-            if (currentListPage > maxPage) {
-                currentListPage = maxPage;
-            }
-            updateCard();
-        };
+        );
+
+
+        // =========================================================
+        // 確認刪除
+        // =========================================================
+
+        confirmDeleteBtn.onclick =
+            function () {
+
+                if (!pendingDeleteTarget) {
+                    return;
+                }
+
+
+                const {
+                    word: wordText,
+                    category: categoryText
+                } =
+                    pendingDeleteTarget;
+
+
+                const originalIndex =
+                    words.findIndex(
+                        item =>
+                            item.word === wordText &&
+                            item.category === categoryText
+                    );
+
+
+                if (originalIndex !== -1) {
+
+                    words.splice(
+                        originalIndex,
+                        1
+                    );
+                }
+
+
+                closeDeleteModal();
+
+
+                const filteredWords =
+                    getFilteredWords();
+
+
+                if (
+                    currentIndex >=
+                    filteredWords.length
+                ) {
+
+                    currentIndex =
+                        Math.max(
+                            0,
+                            filteredWords.length - 1
+                        );
+                }
+
+
+                const maxPage =
+                    Math.max(
+                        1,
+                        Math.ceil(
+                            filteredWords.length /
+                            itemsPerPage
+                        )
+                    );
+
+
+                if (
+                    currentListPage >
+                    maxPage
+                ) {
+
+                    currentListPage =
+                        maxPage;
+                }
+
+
+                updateCard();
+
+                scheduleCloudSave();
+
+
+                syncStatus.textContent =
+                    "狀態：🟡 已刪除，正在同步...";
+            };
+
+
+        // =========================================================
+        // 重置預設單字
+        // =========================================================
 
         function loadDefaultWords() {
-            if (confirm("確定要重置並載入預設的分類單字庫嗎？")) {
-                words = JSON.parse(JSON.stringify(defaultCsatWords));
-                currentIndex = 0;
-                setStatusFilter('all');
-                categoryFilter.value = 'all';
-                searchInput.value = "";
-                currentListPage = 1;
-                updateCard();
-            }
-        }
 
-        function exportData() {
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(words, null, 2));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "vocab_backup.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
-        }
+            const confirmed =
+                confirm(
+                    "確定要重置並載入預設的分類單字庫嗎？\n\n目前自訂單字與背誦狀態都會被重置。"
+                );
 
-        function importData(event) {
-            const fileReader = new FileReader();
-            if (event.target.files[0]) {
-                fileReader.readAsText(event.target.files[0], "UTF-8");
-                fileReader.onload = function(e) {
-                    try {
-                        const importedWords = JSON.parse(e.target.result);
-                        if (Array.isArray(importedWords)) {
-                            words = importedWords;
-                            currentIndex = 0;
-                            searchInput.value = "";
-                            currentListPage = 1;
-                            updateCard();
-                            alert("資料匯入成功！");
-                        } else {
-                            alert("檔案格式錯誤！");
-                        }
-                    } catch (error) {
-                        alert("解析檔案失敗！");
-                    }
-                };
-            }
-        }
 
-        function renderWordList() {
-            wordListContainer.innerHTML = "";
-            paginationContainer.innerHTML = "";
-            
-            const filteredWords = getFilteredWords();
-            
-            if (filteredWords.length === 0) {
-                wordListContainer.innerHTML = `<div style="text-align:center; color:var(--gray-color); padding:16px; font-weight:500;">沒有符合條件的單字</div>`;
+            if (!confirmed) {
                 return;
             }
 
-            const totalPages = Math.ceil(filteredWords.length / itemsPerPage);
-            if (currentListPage > totalPages) currentListPage = totalPages;
-            
-            const start = (currentListPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const currentItems = filteredWords.slice(start, end);
 
-            currentItems.forEach((item) => {
-                const div = document.createElement('div');
-                div.className = 'word-item';
-                const isCurrent = filteredWords[currentIndex] && filteredWords[currentIndex].word === item.word && filteredWords[currentIndex].category === item.category;
-                div.style.backgroundColor = isCurrent ? 'var(--current-item-bg)' : 'transparent';
-                
-                div.innerHTML = `
-                    <button class="word-btn" onclick="jumpToWord('${item.word}', '${item.category}')">
-                        <strong style="color: var(--primary-color);">[${item.category}]</strong> ${item.word}：${item.meaning} ${item.known ? '🟢' : '🔴'}
-                    </button>
-                    <button class="delete-btn" onclick="promptDeleteWord('${item.word}', '${item.category}')">刪除</button>
-                `;
-                wordListContainer.appendChild(div);
-            });
+            words =
+                getDefaultWords();
 
-            if (totalPages > 1) {
-                let pagesToShow = [];
-                const maxVisiblePages = 9;
 
-                if (totalPages <= maxVisiblePages) {
-                    pagesToShow = Array.from({ length: totalPages }, (_, i) => i + 1);
-                } else {
-                    let startPage = Math.max(1, currentListPage - 4);
-                    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            currentIndex = 0;
 
-                    if (endPage - startPage + 1 < maxVisiblePages) {
-                        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            currentListPage = 1;
+
+            currentStatusFilter =
+                "all";
+
+            categoryFilter.value =
+                "all";
+
+            searchInput.value =
+                "";
+
+
+            document
+                .querySelectorAll(".filter-tab-btn")
+                .forEach(btn =>
+                    btn.classList.remove("active")
+                );
+
+            document
+                .getElementById("statusBtn-all")
+                .classList.add("active");
+
+
+            updateCard();
+
+            scheduleCloudSave();
+
+
+            syncStatus.textContent =
+                "狀態：🟡 已重置，正在同步...";
+        }
+
+
+        // =========================================================
+        // 匯出
+        // =========================================================
+
+        function exportData() {
+
+            const json =
+                JSON.stringify(
+                    words,
+                    null,
+                    2
+                );
+
+
+            const blob =
+                new Blob(
+                    [json],
+                    {
+                        type:
+                            "application/json;charset=utf-8"
                     }
+                );
 
-                    if (startPage > 1) {
-                        pagesToShow.push(1);
-                        if (startPage > 2) pagesToShow.push('...');
-                    }
 
-                    for (let i = startPage; i <= endPage; i++) {
-                        if (i !== 1 && i !== totalPages) {
-                            pagesToShow.push(i);
+            const url =
+                URL.createObjectURL(blob);
+
+
+            const anchor =
+                document.createElement("a");
+
+
+            anchor.href = url;
+
+            anchor.download =
+                "vocab_backup.json";
+
+
+            document.body.appendChild(
+                anchor
+            );
+
+            anchor.click();
+
+            anchor.remove();
+
+
+            URL.revokeObjectURL(url);
+
+
+            syncStatus.textContent =
+                "狀態：🟢 已匯出資料";
+        }
+
+
+        // =========================================================
+        // 匯入
+        // =========================================================
+
+        function importData(event) {
+
+            const file =
+                event.target.files[0];
+
+
+            if (!file) {
+                return;
+            }
+
+
+            const reader =
+                new FileReader();
+
+
+            reader.onload =
+                function (e) {
+
+                    try {
+
+                        const importedWords =
+                            JSON.parse(
+                                e.target.result
+                            );
+
+
+                        if (
+                            !Array.isArray(
+                                importedWords
+                            )
+                        ) {
+
+                            alert(
+                                "檔案格式錯誤！"
+                            );
+
+                            return;
                         }
+
+
+                        // 基本資料清理
+                        words =
+                            importedWords
+                                .filter(
+                                    item =>
+                                        item &&
+                                        typeof item ===
+                                            "object" &&
+                                        item.word &&
+                                        item.meaning
+                                )
+                                .map(
+                                    item => ({
+                                        word:
+                                            String(
+                                                item.word
+                                            ),
+
+                                        meaning:
+                                            String(
+                                                item.meaning
+                                            ),
+
+                                        example:
+                                            String(
+                                                item.example ||
+                                                ""
+                                            ),
+
+                                        category:
+                                            String(
+                                                item.category ||
+                                                "名詞"
+                                            ),
+
+                                        known:
+                                            item.known ===
+                                            true
+                                    })
+                                );
+
+
+                        currentIndex = 0;
+
+                        currentListPage = 1;
+
+                        currentStatusFilter =
+                            "all";
+
+                        categoryFilter.value =
+                            "all";
+
+                        searchInput.value =
+                            "";
+
+
+                        document
+                            .querySelectorAll(
+                                ".filter-tab-btn"
+                            )
+                            .forEach(
+                                btn =>
+                                    btn.classList.remove(
+                                        "active"
+                                    )
+                            );
+
+                        document
+                            .getElementById(
+                                "statusBtn-all"
+                            )
+                            .classList.add(
+                                "active"
+                            );
+
+
+                        updateCard();
+
+                        scheduleCloudSave();
+
+
+                        alert(
+                            "資料匯入成功！"
+                        );
+
+
+                        syncStatus.textContent =
+                            "狀態：🟡 匯入完成，正在同步...";
                     }
 
-                    if (endPage < totalPages) {
-                        if (endPage < totalPages - 1) pagesToShow.push('...');
-                        pagesToShow.push(totalPages);
+                    catch (error) {
+
+                        console.error(
+                            "匯入錯誤：",
+                            error
+                        );
+
+                        alert(
+                            "解析檔案失敗！請確認 JSON 格式正確。"
+                        );
                     }
-                    
-                    if (!pagesToShow.includes(1)) pagesToShow.unshift(1);
-                    if (!pagesToShow.includes(totalPages)) pagesToShow.push(totalPages);
+
+                };
+
+
+            reader.readAsText(
+                file,
+                "UTF-8"
+            );
+
+
+            // 讓同一個檔案可以再次選取
+            event.target.value = "";
+        }
+
+
+        // =========================================================
+        // Render 單字列表
+        // =========================================================
+
+        function renderWordList() {
+
+            wordListContainer.innerHTML =
+                "";
+
+            paginationContainer.innerHTML =
+                "";
+
+
+            const filteredWords =
+                getFilteredWords();
+
+
+            // 沒有資料
+            if (
+                filteredWords.length === 0
+            ) {
+
+                const empty =
+                    document.createElement(
+                        "div"
+                    );
+
+                empty.style.textAlign =
+                    "center";
+
+                empty.style.color =
+                    "var(--gray-color)";
+
+                empty.style.padding =
+                    "16px";
+
+                empty.style.fontWeight =
+                    "500";
+
+                empty.textContent =
+                    "沒有符合條件的單字";
+
+                wordListContainer.appendChild(
+                    empty
+                );
+
+                return;
+            }
+
+
+            const totalPages =
+                Math.ceil(
+                    filteredWords.length /
+                    itemsPerPage
+                );
+
+
+            if (
+                currentListPage >
+                totalPages
+            ) {
+
+                currentListPage =
+                    totalPages;
+            }
+
+
+            const start =
+                (
+                    currentListPage -
+                    1
+                ) * itemsPerPage;
+
+
+            const end =
+                start + itemsPerPage;
+
+
+            const currentItems =
+                filteredWords.slice(
+                    start,
+                    end
+                );
+
+
+            // 產生單字
+            currentItems.forEach(
+                item => {
+
+                    const div =
+                        document.createElement(
+                            "div"
+                        );
+
+                    div.className =
+                        "word-item";
+
+
+                    const current =
+                        filteredWords[
+                            currentIndex
+                        ];
+
+
+                    const isCurrent =
+                        current &&
+                        current.word ===
+                            item.word &&
+                        current.category ===
+                            item.category;
+
+
+                    div.style.backgroundColor =
+                        isCurrent
+                            ? "var(--current-item-bg)"
+                            : "transparent";
+
+
+                    // 單字按鈕
+                    const wordBtn =
+                        document.createElement(
+                            "button"
+                        );
+
+                    wordBtn.className =
+                        "word-btn";
+
+
+                    const strong =
+                        document.createElement(
+                            "strong"
+                        );
+
+                    strong.style.color =
+                        "var(--primary-color)";
+
+
+                    strong.textContent =
+                        `[${item.category || "未分類"}]`;
+
+
+                    wordBtn.appendChild(
+                        strong
+                    );
+
+
+                    const text =
+                        document.createTextNode(
+                            ` ${item.word}：${item.meaning} ${
+                                item.known
+                                    ? "🟢"
+                                    : "🔴"
+                            }`
+                        );
+
+
+                    wordBtn.appendChild(
+                        text
+                    );
+
+
+                    wordBtn.addEventListener(
+                        "click",
+                        () => {
+
+                            jumpToWord(
+                                item.word,
+                                item.category
+                            );
+
+                        }
+                    );
+
+
+                    // 刪除按鈕
+                    const deleteBtn =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    deleteBtn.className =
+                        "delete-btn";
+
+
+                    deleteBtn.textContent =
+                        "刪除";
+
+
+                    deleteBtn.addEventListener(
+                        "click",
+                        () => {
+
+                            promptDeleteWord(
+                                item.word,
+                                item.category
+                            );
+
+                        }
+                    );
+
+
+                    div.appendChild(
+                        wordBtn
+                    );
+
+                    div.appendChild(
+                        deleteBtn
+                    );
+
+
+                    wordListContainer.appendChild(
+                        div
+                    );
+
+                }
+            );
+
+
+            // =====================================================
+            // 分頁
+            // =====================================================
+
+            if (totalPages <= 1) {
+                return;
+            }
+
+
+            let pagesToShow = [];
+
+            const maxVisiblePages = 9;
+
+
+            if (
+                totalPages <=
+                maxVisiblePages
+            ) {
+
+                pagesToShow =
+                    Array.from(
+                        {
+                            length:
+                                totalPages
+                        },
+                        (_, i) =>
+                            i + 1
+                    );
+
+            } else {
+
+                let startPage =
+                    Math.max(
+                        1,
+                        currentListPage - 4
+                    );
+
+
+                let endPage =
+                    Math.min(
+                        totalPages,
+                        startPage +
+                            maxVisiblePages -
+                            1
+                    );
+
+
+                if (
+                    endPage -
+                        startPage +
+                        1 <
+                    maxVisiblePages
+                ) {
+
+                    startPage =
+                        Math.max(
+                            1,
+                            endPage -
+                                maxVisiblePages +
+                                1
+                        );
                 }
 
-                pagesToShow.forEach(page => {
-                    if (page === '...') {
-                        const ellipsis = document.createElement('span');
-                        ellipsis.className = 'page-ellipsis';
-                        ellipsis.textContent = '...';
-                        paginationContainer.appendChild(ellipsis);
-                    } else {
-                        const pageBtn = document.createElement('button');
-                        pageBtn.className = `page-btn ${page === currentListPage ? 'active' : ''}`;
-                        pageBtn.textContent = page;
-                        
-                        pageBtn.onclick = (event) => {
-                            event.preventDefault();
-                            changePage(page);
-                        };
-                        
-                        paginationContainer.appendChild(pageBtn);
+
+                if (
+                    startPage > 1
+                ) {
+
+                    pagesToShow.push(1);
+
+                    if (
+                        startPage > 2
+                    ) {
+
+                        pagesToShow.push(
+                            "..."
+                        );
                     }
-                });
+                }
+
+
+                for (
+                    let i =
+                        startPage;
+                    i <= endPage;
+                    i++
+                ) {
+
+                    if (
+                        i !== 1 &&
+                        i !== totalPages
+                    ) {
+
+                        pagesToShow.push(
+                            i
+                        );
+                    }
+                }
+
+
+                if (
+                    endPage <
+                    totalPages
+                ) {
+
+                    if (
+                        endPage <
+                        totalPages - 1
+                    ) {
+
+                        pagesToShow.push(
+                            "..."
+                        );
+                    }
+
+                    pagesToShow.push(
+                        totalPages
+                    );
+                }
+
+
+                if (
+                    !pagesToShow.includes(1)
+                ) {
+
+                    pagesToShow.unshift(
+                        1
+                    );
+                }
+
+
+                if (
+                    !pagesToShow.includes(
+                        totalPages
+                    )
+                ) {
+
+                    pagesToShow.push(
+                        totalPages
+                    );
+                }
+
+            }
+
+
+            pagesToShow.forEach(
+                page => {
+
+                    if (
+                        page === "..."
+                    ) {
+
+                        const ellipsis =
+                            document.createElement(
+                                "span"
+                            );
+
+                        ellipsis.className =
+                            "page-ellipsis";
+
+                        ellipsis.textContent =
+                            "...";
+
+                        paginationContainer.appendChild(
+                            ellipsis
+                        );
+
+                        return;
+                    }
+
+
+                    const pageBtn =
+                        document.createElement(
+                            "button"
+                        );
+
+
+                    pageBtn.className =
+                        "page-btn";
+
+
+                    if (
+                        page ===
+                        currentListPage
+                    ) {
+
+                        pageBtn.classList.add(
+                            "active"
+                        );
+                    }
+
+
+                    pageBtn.textContent =
+                        page;
+
+
+                    pageBtn.addEventListener(
+                        "click",
+                        event => {
+
+                            event.preventDefault();
+
+                            changePage(
+                                page
+                            );
+
+                        }
+                    );
+
+
+                    paginationContainer.appendChild(
+                        pageBtn
+                    );
+
+                }
+            );
+
+        }
+
+
+        // =========================================================
+        // LocalStorage
+        // =========================================================
+
+        function saveToLocalStorageOnly() {
+
+            try {
+
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    JSON.stringify(words)
+                );
+
+            } catch (error) {
+
+                console.error(
+                    "LocalStorage 儲存失敗：",
+                    error
+                );
+
             }
         }
 
-       // ==========================================
-// Supabase 雲端同步整合
-// ==========================================
-// 注意：需在 <head> 中加入 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-const SUPABASE_URL = 'https://ojfhffofofqylkohryzp.supabase.co/rest/v1/';
-const SUPABASE_KEY = 'sb_publishable_btMT26lSBsTSTvlm1TArcQ_Uck7UxGn';
 
-// 初始化 Supabase 客戶端
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        // =========================================================
+        // 排程雲端同步
+        // =========================================================
 
-// 讀取資料
-async function loadFromSupabase() {
-    syncStatus.textContent = "狀態：正在讀取雲端資料...";
-    try {
-        const { data, error } = await supabase
-            .from('vocab_store')
-            .select('data')
-            .eq('id', 1)
-            .maybeSingle(); // 使用 maybeSingle 避免找不到資料時報錯
-            
-        if (error) throw error;
+        function scheduleCloudSave() {
 
-        if (data && data.data) {
-            words = data.data; 
-            updateCard();      
-            syncStatus.textContent = "狀態：🟢 已從雲端同步";
+            saveToLocalStorageOnly();
+
+
+            if (
+                isLoadingFromSupabase
+            ) {
+                return;
+            }
+
+
+            if (!supabaseClient) {
+
+                syncStatus.textContent =
+                    "狀態：⚠️ Supabase 未初始化，資料已儲存在本機";
+
+                return;
+            }
+
+
+            clearTimeout(
+                saveTimer
+            );
+
+
+            saveTimer =
+                setTimeout(
+                    () => {
+
+                        saveToSupabase();
+
+                    },
+                    800
+                );
         }
-    } catch (err) {
-        console.error("同步失敗:", err);
-        syncStatus.textContent = "狀態：⚠️ 讀取雲端資料失敗";
-    }
-}
 
-// 儲存資料到本地與雲端
-async function saveToLocalStorage() {
-    // 1. 存本地
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
-    
-    // 2. 存雲端
-    try {
-        const { error } = await supabase
-            .from('vocab_store')
-            .upsert({ id: 1, data: words });
 
-        if (error) throw error;
-        syncStatus.textContent = `狀態：🟢 雲端同步成功 (${new Date().toLocaleTimeString()})`;
-    } catch (err) {
-        console.error("雲端同步失敗:", err);
-        syncStatus.textContent = "狀態：⚠️ 雲端同步失敗";
-    }
-}
+        // =========================================================
+        // 儲存 Supabase
+        // =========================================================
 
-// 初始化執行
-// 在呼叫 loadFromSupabase 之後，確保介面有初次更新
-loadFromSupabase().then(() => {
-    updateCard(); 
-});
+        async function saveToSupabase() {
+
+            if (
+                !supabaseClient
+            ) {
+
+                syncStatus.textContent =
+                    "狀態：⚠️ Supabase 未初始化";
+
+                return;
+            }
+
+
+            if (
+                isLoadingFromSupabase
+            ) {
+                return;
+            }
+
+
+            try {
+
+                syncStatus.textContent =
+                    "狀態：☁️ 正在同步...";
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("vocab_store")
+                        .upsert(
+                            {
+                                id: 1,
+                                data: words
+                            },
+                            {
+                                onConflict:
+                                    "id"
+                            }
+                        );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                syncStatus.textContent =
+                    `狀態：🟢 雲端同步成功 (${new Date().toLocaleTimeString()})`;
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Supabase 儲存失敗：",
+                    error
+                );
+
+
+                syncStatus.textContent =
+                    "狀態：⚠️ 雲端同步失敗，資料已保留在本機";
+            }
+
+        }
+
+
+        // =========================================================
+        // 從 Supabase 讀取
+        // =========================================================
+
+        async function loadFromSupabase() {
+
+            if (!supabaseClient) {
+
+                syncStatus.textContent =
+                    "狀態：⚠️ Supabase SDK 載入失敗，使用本機資料";
+
+                updateCard();
+
+                return;
+            }
+
+
+            isLoadingFromSupabase =
+                true;
+
+
+            syncStatus.textContent =
+                "狀態：☁️ 正在讀取雲端資料...";
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabaseClient
+                        .from("vocab_store")
+                        .select("data")
+                        .eq("id", 1)
+                        .maybeSingle();
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                // 有雲端資料
+                if (
+                    data &&
+                    Array.isArray(
+                        data.data
+                    )
+                ) {
+
+                    words =
+                        data.data;
+
+
+                    // 同步到本機
+                    saveToLocalStorageOnly();
+
+
+                    currentIndex =
+                        0;
+
+                    currentListPage =
+                        1;
+
+
+                    updateCard();
+
+
+                    syncStatus.textContent =
+                        `狀態：🟢 已從雲端同步 (${new Date().toLocaleTimeString()})`;
+
+
+                } else {
+
+                    // 第一次使用
+                    syncStatus.textContent =
+                        "狀態：🟡 雲端尚無資料，正在建立初始資料...";
+
+
+                    // 保持本機資料
+                    saveToLocalStorageOnly();
+
+
+                    await saveToSupabase();
+
+                }
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Supabase 讀取失敗：",
+                    error
+                );
+
+
+                syncStatus.textContent =
+                    "狀態：⚠️ 雲端讀取失敗，已使用本機資料";
+
+
+                updateCard();
+
+            }
+
+            finally {
+
+                isLoadingFromSupabase =
+                    false;
+            }
+
+        }
+
+
+        // =========================================================
+        // 鍵盤操作
+        // =========================================================
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                // 如果正在輸入文字，不攔截方向鍵
+                const tag =
+                    document.activeElement
+                        ?.tagName;
+
+                if (
+                    tag === "INPUT" ||
+                    tag === "SELECT" ||
+                    tag === "TEXTAREA"
+                ) {
+                    return;
+                }
+
+
+                switch (
+                    event.key
+                ) {
+
+                    case "ArrowLeft":
+                        prevCard();
+                        break;
+
+                    case "ArrowRight":
+                        nextCard();
+                        break;
+
+                    case " ":
+                        event.preventDefault();
+                        flipCard();
+                        break;
+
+                    case "1":
+                        markStatus(false);
+                        break;
+
+                    case "2":
+                        markStatus(true);
+                        break;
+
+                }
+
+            }
+        );
+
+
+        // =========================================================
+        // 啟動
+        // =========================================================
+
+        // 先立即顯示本機資料
+        updateCard();
+
+
+        // 再嘗試讀取雲端
+        loadFromSupabase();
+
     </script>
+
 </body>
 </html>
