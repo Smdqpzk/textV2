@@ -1240,7 +1240,11 @@
         // 設定
         // =========================================================
 
-        const STORAGE_KEY =
+        // 單字本體只存在 Supabase；LocalStorage 只保存「熟悉狀態」
+        const KNOWN_STORAGE_KEY =
+            "csat_vocabulary_known_status_v1";
+
+        const LEGACY_STORAGE_KEY =
             "csat_vocabulary_permanent_storage_v5";
 
         const THEME_KEY =
@@ -1287,38 +1291,59 @@
         }
 
 
-        function getLocalWords() {
+        function getLocalKnownStatuses() {
 
             try {
-
                 const saved =
-                    localStorage.getItem(STORAGE_KEY);
+                    localStorage.getItem(KNOWN_STORAGE_KEY);
 
-                if (!saved) {
-                    return getDefaultWords();
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                        return parsed;
+                    }
                 }
 
-                const parsed =
-                    JSON.parse(saved);
+                // 從舊版本 LocalStorage 遷移「known」資料一次；
+                // 遷移後不再保存完整單字資料。
+                const legacy =
+                    localStorage.getItem(LEGACY_STORAGE_KEY);
 
-                if (Array.isArray(parsed)) {
-                    return parsed;
+                if (legacy) {
+                    const parsedLegacy = JSON.parse(legacy);
+                    if (Array.isArray(parsedLegacy)) {
+                        const migrated = {};
+                        parsedLegacy.forEach(item => {
+                            if (item && item.word) {
+                                const key = `${item.word}\u0000${item.category || "其他"}`;
+                                migrated[key] = item.known === true;
+                            }
+                        });
+
+                        localStorage.setItem(
+                            KNOWN_STORAGE_KEY,
+                            JSON.stringify(migrated)
+                        );
+
+                        return migrated;
+                    }
                 }
 
             } catch (error) {
-
                 console.error(
-                    "讀取 LocalStorage 失敗：",
+                    "讀取熟悉狀態失敗：",
                     error
                 );
-
             }
 
-            return getDefaultWords();
+            return {};
         }
 
 
-        let words = getLocalWords();
+        let knownStatuses = getLocalKnownStatuses();
+
+        // 單字本體不從 LocalStorage 載入，開啟網頁後一律以 Supabase 為準。
+        let words = [];
 
         let currentTheme =
             localStorage.getItem(THEME_KEY) || "light";
@@ -1716,7 +1741,7 @@
 
                 renderWordList();
 
-                saveToLocalStorageOnly();
+                
 
                 return;
             }
@@ -1790,7 +1815,7 @@
             renderWordList();
 
             // 本機儲存
-            saveToLocalStorageOnly();
+            
         }
 
 
@@ -1935,9 +1960,7 @@
                 words[originalIndex].known =
                     status;
 
-                saveToLocalStorageOnly();
-
-                scheduleCloudSave();
+                saveKnownStatus(words[originalIndex], status);
             }
 
 
@@ -2032,19 +2055,16 @@
 
 
             // 新增
-            words.push({
-
+            const newWord = {
                 word: newWordValue,
-
                 meaning: newMeaningValue,
-
                 example: newExampleValue,
-
                 category: newCategoryValue,
-
                 known: false
+            };
 
-            });
+            words.push(newWord);
+            saveKnownStatus(newWord, false);
 
 
             // 清空表單
@@ -2195,6 +2215,8 @@
 
                 if (originalIndex !== -1) {
 
+                    removeKnownStatus(words[originalIndex]);
+
                     words.splice(
                         originalIndex,
                         1
@@ -2272,6 +2294,8 @@
             words =
                 getDefaultWords();
 
+            knownStatuses = {};
+            saveKnownStatuses();
 
             currentIndex = 0;
 
@@ -2408,6 +2432,9 @@
 
 
                         // 基本資料清理
+                        // 匯入的是「雲端單字本體」；known 另外保存到 LocalStorage。
+                        knownStatuses = {};
+
                         words =
                             importedWords
                                 .filter(
@@ -2447,6 +2474,11 @@
                                             true
                                     })
                                 );
+
+                        words.forEach(word => {
+                            knownStatuses[getWordStatusKey(word)] = word.known === true;
+                        });
+                        saveKnownStatuses();
 
 
                         currentIndex = 0;
@@ -2963,26 +2995,80 @@
 
 
         // =========================================================
-        // LocalStorage
+        // LocalStorage：只保存「熟悉狀態」
         // =========================================================
 
-        function saveToLocalStorageOnly() {
+        function getWordStatusKey(word) {
+            if (word?.id) {
+                return `id:${word.id}`;
+            }
 
+            return `word:${String(word?.word || "").toLowerCase()}\u0000${word?.category || "其他"}`;
+        }
+
+
+        function getKnownStatus(word) {
+            const idKey = word?.id ? `id:${word.id}` : null;
+            const legacyKey = `word:${String(word?.word || "").toLowerCase()}\u0000${word?.category || "其他"}`;
+
+            if (idKey && Object.prototype.hasOwnProperty.call(knownStatuses, idKey)) {
+                return knownStatuses[idKey] === true;
+            }
+
+            if (Object.prototype.hasOwnProperty.call(knownStatuses, legacyKey)) {
+                return knownStatuses[legacyKey] === true;
+            }
+
+            // 舊版遷移時可能使用沒有 word: 前綴的 key。
+            const oldKey = `${word?.word || ""}\u0000${word?.category || "其他"}`;
+            if (Object.prototype.hasOwnProperty.call(knownStatuses, oldKey)) {
+                return knownStatuses[oldKey] === true;
+            }
+
+            return false;
+        }
+
+
+        function saveKnownStatuses() {
             try {
-
                 localStorage.setItem(
-                    STORAGE_KEY,
-                    JSON.stringify(words)
+                    KNOWN_STORAGE_KEY,
+                    JSON.stringify(knownStatuses)
                 );
-
             } catch (error) {
-
                 console.error(
-                    "LocalStorage 儲存失敗：",
+                    "熟悉狀態儲存失敗：",
                     error
                 );
-
             }
+        }
+
+
+        function saveKnownStatus(word, status) {
+            knownStatuses[getWordStatusKey(word)] = status === true;
+            saveKnownStatuses();
+        }
+
+
+        function removeKnownStatus(word) {
+            const keys = [
+                getWordStatusKey(word),
+                `word:${String(word?.word || "").toLowerCase()}\u0000${word?.category || "其他"}`,
+                `${word?.word || ""}\u0000${word?.category || "其他"}`
+            ];
+
+            keys.forEach(key => {
+                delete knownStatuses[key];
+            });
+
+            saveKnownStatuses();
+        }
+
+
+        function applyLocalKnownStatuses() {
+            words.forEach(word => {
+                word.known = getKnownStatus(word);
+            });
         }
 
 
@@ -2991,9 +3077,6 @@
         // =========================================================
 
         function scheduleCloudSave() {
-
-            saveToLocalStorageOnly();
-
 
             if (
                 isLoadingFromSupabase
@@ -3048,7 +3131,8 @@
                 syncStatus.textContent =
                     "狀態：☁️ 正在同步...";
 
-                // 逐筆新增 / 更新 vocabulary
+                // 單字本體（word / meaning / example / category）全部存雲端。
+                // known 不寫入 Supabase，熟悉狀態只存在本機 LocalStorage。
                 for (let i = 0; i < words.length; i++) {
                     const word = words[i];
 
@@ -3056,8 +3140,7 @@
                         word: word.word,
                         meaning: word.meaning,
                         example: word.example || "",
-                        category: word.category || "其他",
-                        known: word.known ?? false
+                        category: word.category || "其他"
                     };
 
                     if (word.id) {
@@ -3076,14 +3159,13 @@
 
                         if (error) throw error;
 
-                        // 保存 Supabase 自動產生的 UUID，之後修改/刪除才能精準對應
                         if (data?.id) {
                             words[i].id = data.id;
                         }
                     }
                 }
 
-                // 刪除雲端中已經從網頁刪掉的單字
+                // 刪除雲端中已經從網頁刪掉的單字。
                 const currentIds = new Set(
                     words
                         .map(word => word.id)
@@ -3104,7 +3186,6 @@
                 }
 
                 cloudWordIds = currentIds;
-                saveToLocalStorageOnly();
 
                 syncStatus.textContent =
                     `狀態：🟢 雲端同步成功 (${new Date().toLocaleTimeString()})`;
@@ -3125,7 +3206,8 @@
 
             if (!supabaseClient) {
                 syncStatus.textContent =
-                    "狀態：⚠️ Supabase SDK 載入失敗，使用本機資料";
+                    "狀態：⚠️ Supabase SDK 載入失敗，無法載入雲端單字";
+                words = [];
                 updateCard();
                 return;
             }
@@ -3138,49 +3220,43 @@
             try {
                 const { data, error } = await supabaseClient
                     .from("vocabulary")
-                    .select("id, word, meaning, example, category, known, created_at")
+                    .select("id, word, meaning, example, category, created_at")
                     .order("created_at", { ascending: true });
 
                 if (error) throw error;
 
-                // vocabulary 有資料：以雲端資料為準
-                if (Array.isArray(data) && data.length > 0) {
-                    words = data.map(item => ({
+                // 單字本體以雲端為唯一來源。
+                words = Array.isArray(data)
+                    ? data.map(item => ({
                         id: item.id,
                         word: item.word,
                         meaning: item.meaning,
                         example: item.example || "",
                         category: item.category || "其他",
-                        known: item.known ?? false
-                    }));
+                        known: false
+                    }))
+                    : [];
 
-                    cloudWordIds = new Set(
-                        words.map(word => word.id).filter(Boolean)
-                    );
+                // 熟悉狀態只從本機 LocalStorage 套用。
+                applyLocalKnownStatuses();
 
-                    saveToLocalStorageOnly();
-                    currentIndex = 0;
-                    currentListPage = 1;
-                    updateCard();
+                cloudWordIds = new Set(
+                    words.map(word => word.id).filter(Boolean)
+                );
 
-                    syncStatus.textContent =
-                        `狀態：🟢 已從雲端同步 ${words.length} 個單字 (${new Date().toLocaleTimeString()})`;
+                currentIndex = 0;
+                currentListPage = 1;
+                updateCard();
 
-                } else {
-                    // vocabulary 是空的：把目前本機資料第一次上傳
-                    cloudWordIds = new Set();
-                    syncStatus.textContent =
-                        "狀態：🟡 雲端尚無資料，正在建立初始資料...";
-
-                    saveToLocalStorageOnly();
-                    await saveToSupabase();
-                }
+                syncStatus.textContent =
+                    `狀態：🟢 已從雲端同步 ${words.length} 個單字；熟悉狀態使用本機儲存 (${new Date().toLocaleTimeString()})`;
 
             } catch (error) {
                 console.error("Supabase 讀取失敗：", error);
-                syncStatus.textContent =
-                    "狀態：⚠️ 雲端讀取失敗，已使用本機資料";
+                words = [];
                 updateCard();
+                syncStatus.textContent =
+                    "狀態：⚠️ 雲端讀取失敗，沒有使用本機單字資料";
 
             } finally {
                 isLoadingFromSupabase = false;
@@ -3245,7 +3321,7 @@
         // 啟動
         // =========================================================
 
-        // 先立即顯示本機資料
+        // 啟動時單字本體以雲端為準；LocalStorage 只提供熟悉狀態。
         updateCard();
 
 
