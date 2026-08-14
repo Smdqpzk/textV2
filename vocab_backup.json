@@ -1,0 +1,1220 @@
+[
+  {
+    "word": "Acknowledge",
+    "meaning": "承認；感謝",
+    "example": "He acknowledged his mistake.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Benefit",
+    "meaning": "對...有益；獲益",
+    "example": "Reading books benefits our minds.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Calculate",
+    "meaning": "計算",
+    "example": "Can you calculate the total cost?",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Determine",
+    "meaning": "決定；決心",
+    "example": "She is determined to pass the exam.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Generate",
+    "meaning": "產生；引起",
+    "example": "The solar panels generate electricity.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Negotiate",
+    "meaning": "談判；協商",
+    "example": "The two countries agreed to negotiate.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Participate",
+    "meaning": "參與；參加",
+    "example": "Everyone is encouraged to participate in the discussion.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Environment",
+    "meaning": "環境",
+    "example": "We should protect our natural environment.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Journal",
+    "meaning": "雜誌；期刊；日誌",
+    "example": "She keeps a daily journal.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Technology",
+    "meaning": "科技",
+    "example": "Modern technology makes our lives easier.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Obvious",
+    "meaning": "明顯的",
+    "example": "It was obvious that he was tired.",
+    "category": "形容詞",
+    "known": false
+  },
+  {
+    "word": "Significant",
+    "meaning": "重要的；顯著的",
+    "example": "There has been a significant change in weather.",
+    "category": "形容詞",
+    "known": false
+  },
+  {
+    "word": "Unique",
+    "meaning": "獨特的",
+    "example": "Every snowflake has a unique shape.",
+    "category": "形容詞",
+    "known": false
+  },
+  {
+    "word": "Valuable",
+    "meaning": "有價值的；寶貴的",
+    "example": "Time is more valuable than money.",
+    "category": "形容詞",
+    "known": false
+  },
+  {
+    "word": "Maximum",
+    "meaning": "最大值；最大量的",
+    "example": "The maximum speed limit is 100 km/h.",
+    "category": "副詞",
+    "known": false
+  },
+  {
+    "word": "As a result",
+    "meaning": "因此；結果",
+    "example": "It rained heavily; as a result, the game was canceled.",
+    "category": "片語",
+    "known": false
+  },
+  {
+    "word": "In addition",
+    "meaning": "此外",
+    "example": "In addition, she speaks fluent French.",
+    "category": "片語",
+    "known": false
+  },
+  {
+    "word": "However",
+    "meaning": "然而；不過",
+    "example": "He tried hard; however, he failed.",
+    "category": "轉折詞",
+    "known": false
+  },
+  {
+    "word": "Furthermore",
+    "meaning": "此外；再者",
+    "example": "The plan is risky. Furthermore, it is too expensive.",
+    "category": "轉折詞",
+    "known": false
+  },
+  {
+    "word": "Elevate",
+    "meaning": "提升",
+    "example": "The platform was elevated by means of hydraulic legs.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Illustrate",
+    "meaning": "說明",
+    "example": "The lecturer illustrated his point with a diagram on the blackboard.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Age",
+    "meaning": "老化",
+    "example": "This cheese/wine improves with age.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Sacrifice",
+    "meaning": "犧牲",
+    "example": "Many women sacrifice interesting careers for their families.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Stimulate",
+    "meaning": "促進",
+    "example": "The government plans to cut taxes in order to stimulate the economy.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Resolve",
+    "meaning": "解決",
+    "example": "The couple resolved their differences and made an effort to get along.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Dissolve",
+    "meaning": "(使)溶解",
+    "example": "Dissolve two spoons of powder in warm water.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Melt",
+    "meaning": "(使)融化",
+    "example": "The meat's beautifully cooked - it melts in your mouth (is so pleasantly soft that you do not need to chew it).",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Impose",
+    "meaning": "強制",
+    "example": "Judges are imposing increasingly heavy fines for minor driving offences.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Depose",
+    "meaning": "使免職",
+    "example": "King Charles I was deposed from the English throne in 1646.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Dispose(+of)",
+    "meaning": "處置",
+    "example": "Please dispose of your litter in the bins provided.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Propose",
+    "meaning": "意圖",
+    "example": "I propose that we wait until the budget has been announced before committing ourselves to any expenditure.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Suppose",
+    "meaning": "猜想",
+    "example": "He found it a lot more difficult to get a job than he supposed it would be.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Subject",
+    "meaning": "使屈服",
+    "example": "The invaders quickly subjected the local tribes.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Object",
+    "meaning": "不贊成",
+    "example": "Would anyone object if we started the meeting now?",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Enclose",
+    "meaning": "包圍",
+    "example": "The park that encloses the monument has recently been enlarged.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Disclose",
+    "meaning": "揭發",
+    "example": "The police have disclosed that two officers are under internal investigation.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Expose",
+    "meaning": "揭發",
+    "example": "The plaster on the walls has been removed to expose the original bricks underneath.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Unveil",
+    "meaning": "揭發",
+    "example": "The memorial to those who had died in the war was unveiled by the Queen.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Unmask",
+    "meaning": "揭發",
+    "example": "At the end of the play the villain is unmasked.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Uncover",
+    "meaning": "揭發",
+    "example": "The investigation uncovered evidence of a large-scale illegal trade in wild birds.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Reveal",
+    "meaning": "揭發",
+    "example": "He was jailed for revealing secrets to the Russians.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Devise",
+    "meaning": "設計",
+    "example": "He's good at devising language games that you can play with students in class.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Designate",
+    "meaning": "指派",
+    "example": "Traditionally, the president designates his or her successor.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Dedicate",
+    "meaning": "致力於",
+    "example": "He has dedicated his life to scientific research.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Imitate",
+    "meaning": "模仿",
+    "example": "Some of the younger pop bands try to imitate their musical heroes from the past.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Celebrate",
+    "meaning": "慶祝；讚揚",
+    "example": "We always celebrate our wedding anniversary by going out to dinner.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Observe",
+    "meaning": "觀察",
+    "example": "The role of scientists is to observe and describe the world, not to try to control it.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Mark",
+    "meaning": "標記；紀念(慶祝)",
+    "example": "Tomorrow's parade will mark the 50th anniversary of the battle.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Praise",
+    "meaning": "讚美",
+    "example": "He should be praised for his honesty.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Compliment",
+    "meaning": "讚美",
+    "example": "I was just complimenting Robert on his wonderful food.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Compromise",
+    "meaning": "妥協",
+    "example": "Well, you want $400 and I say $300, so let's compromise at/on $350.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Compose",
+    "meaning": "組成；創作",
+    "example": "At that time, women composed only 1.6 percent of the US forces.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Decompose",
+    "meaning": "分解；腐爛",
+    "example": "Microbes decompose organic waste into a mixture of methane and carbon dioxide.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "It is more blessed to give than to receive",
+    "meaning": "施比受更有福",
+    "example": "",
+    "category": "片語",
+    "known": false
+  },
+  {
+    "word": "Degrade",
+    "meaning": "分解；危害",
+    "example": "These chemicals quickly degrade into harmless compounds.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Measure",
+    "meaning": "措施；測量",
+    "example": "These measures were designed to improve car safety.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Claim",
+    "meaning": "宣稱",
+    "example": "The company claims (that) it is not responsible for the pollution in the river.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Market",
+    "meaning": "行銷",
+    "example": "Their products are very cleverly marketed.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Present",
+    "meaning": "呈現；提交；獲頒",
+    "example": "The winners were presented with medals.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Represent",
+    "meaning": "(作為...的)代表",
+    "example": "Union officials representing the teachers met the government today.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Develop",
+    "meaning": "罹患；開發；發生",
+    "example": "The study showed that one in twelve women is likely to develop breast cancer.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Perform",
+    "meaning": "執行；表演",
+    "example": "The operation will be performed next week.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Operate",
+    "meaning": "經營；動手術；(使)運行",
+    "example": "For several years she operated a dating agency from her basement.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Reserve",
+    "meaning": "保留",
+    "example": "I reserve judgment on this issue (I won't give an opinion on it now) until we have more information.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Prompt",
+    "meaning": "促使",
+    "example": "Recent worries over the president's health have prompted speculation over his political future.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Contract",
+    "meaning": "收縮；感染",
+    "example": "In spoken English, \"do not\" often contracts to \"don't\".",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Expand",
+    "meaning": "膨脹",
+    "example": "They expanded their retail operations during the 1980s.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Contrast",
+    "meaning": "對立",
+    "example": "If you contrast some of her early writing with her later work, you can see just how much she improved.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Contact",
+    "meaning": "聯絡",
+    "example": "I tried to contact him at his office, but he wasn't in.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Construct",
+    "meaning": "建立",
+    "example": "to construct a new bridge/building",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Board",
+    "meaning": "登上",
+    "example": "At London airport she boarded a plane to Australia.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Broaden",
+    "meaning": "(使)拓寬",
+    "example": "The track broadens and becomes a road at this point.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Oversee",
+    "meaning": "監督",
+    "example": "As marketing manager, her job is to oversee all the company's advertising.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Supervise",
+    "meaning": "監督",
+    "example": "The UN is supervising the distribution of aid by local agencies in the disaster area.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Promote",
+    "meaning": "升遷；推銷",
+    "example": "If I'm not promoted within the next two years, I'm going to change jobs.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Process",
+    "meaning": "處理",
+    "example": "Returning soldiers need time to process what they have experienced in combat.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Implement",
+    "meaning": "實施",
+    "example": "The changes to the national health system will be implemented next year.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Resemble",
+    "meaning": "長得像",
+    "example": "After the earthquake, the city resembled a battlefield.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Assemble",
+    "meaning": "組裝；聚集",
+    "example": "furniture that is easy to assemble",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Disassemble",
+    "meaning": "拆卸",
+    "example": "This video shows you how to disassemble a television set.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Address",
+    "meaning": "處理；發表",
+    "example": "The issue of funding has yet to be addressed.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Adapt",
+    "meaning": "(使)適應",
+    "example": "It took me a while to adapt to the new job.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Adopt",
+    "meaning": "採取；領養",
+    "example": "I think it's time to adopt a different strategy in my dealings with him.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Evaluate",
+    "meaning": "評估",
+    "example": "It's impossible to evaluate these results without knowing more about the research methods employed.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Estimate",
+    "meaning": "評估",
+    "example": "Government sources estimate a long-term 50 percent increase in rail fares.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Assess",
+    "meaning": "評估",
+    "example": "The insurers will need to assess the flood damage.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Merge",
+    "meaning": "(使)合併",
+    "example": "They decided to merge the two companies into one.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Submerge",
+    "meaning": "沉沒",
+    "example": "The submarine submerged when enemy planes were sighted.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Wreck",
+    "meaning": "破壞",
+    "example": "The explosion shattered nearby windows and wrecked two cars.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Grind",
+    "meaning": "碾碎",
+    "example": "They grind the grain into flour (make flour by crushing grain) between two large stones.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Inquire",
+    "meaning": "詢問",
+    "example": "Shall I inquire about the price of tickets?",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Acquire",
+    "meaning": "得到",
+    "example": "I seem to have acquired (have got although I don't know how) two copies of this book.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Depict",
+    "meaning": "描繪",
+    "example": "Her paintings depict the lives of ordinary people in the last century.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Yield",
+    "meaning": "產出",
+    "example": "The investigation yielded some unexpected results.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Advocate",
+    "meaning": "提倡",
+    "example": "He advocates the return of capital punishment.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Diagnose",
+    "meaning": "診斷",
+    "example": "His condition was diagnosed as some type of blood disorder.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Undermine",
+    "meaning": "逐漸削弱",
+    "example": "The president has accused two cabinet members of working secretly to undermine his position/him.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Extend",
+    "meaning": "擴大",
+    "example": "We have plans to extend our house (to make it bigger).",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Infer",
+    "meaning": "推斷",
+    "example": "What do you infer from her refusal?",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Provide",
+    "meaning": "提供",
+    "example": "This booklet provides useful information about local services.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Dread",
+    "meaning": "害怕",
+    "example": "He's dreading the exam - he's sure he's going to fail.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Integrate",
+    "meaning": "融合",
+    "example": "It's very difficult to integrate yourself into a society whose culture is so different from your own.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Overturn",
+    "meaning": "推翻；(使)翻倒",
+    "example": "The Court of Appeal overturned the earlier decision.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Tremble",
+    "meaning": "發抖",
+    "example": "I was trembling with fear, panicking that I had not made the right decision.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Gaze",
+    "meaning": "凝視",
+    "example": "He spends hours gazing out of the window when he should be working.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Wind",
+    "meaning": "蜿蜒；使捲繞",
+    "example": "The river winds through the valley.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Draw",
+    "meaning": "吸引；畫；作為",
+    "example": "He's an excellent speaker who always draws a crowd.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Honor",
+    "meaning": "尊重；表彰",
+    "example": "We should honor the opinions of others",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Ancestor",
+    "meaning": "祖先",
+    "example": "There were portraits of his ancestors on the walls of the room.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Offspring",
+    "meaning": "後代",
+    "example": "In the case of the guinea pig, the number of offspring varies between two and five.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Fetus",
+    "meaning": "胎兒",
+    "example": "",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Infant",
+    "meaning": "嬰兒",
+    "example": "",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Adolescent",
+    "meaning": "青少年",
+    "example": "",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Corpse",
+    "meaning": "屍體",
+    "example": "",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Fraction",
+    "meaning": "碎片",
+    "example": "",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Fragment",
+    "meaning": "碎片",
+    "example": "",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Fracture",
+    "meaning": "骨折",
+    "example": "He suffered multiple fractures in a motorcycle accident.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Debris",
+    "meaning": "殘骸",
+    "example": "Debris from the aircraft was scattered over a large area.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Timeliness",
+    "meaning": "即時性",
+    "example": "The system may help severe-weather researchers improve the timeliness and accuracy of forecasting storms.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Presence",
+    "meaning": "存在；出席",
+    "example": "The presence of pollen in the atmosphere causes hay fever in some people.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Stroke",
+    "meaning": "中風",
+    "example": "When a massive stroke left my father paralysed on his left side, no one thought he'd ever walk again.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Seriousness",
+    "meaning": "嚴重",
+    "example": "I don't think he has any idea of the seriousness of the situation.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Severity",
+    "meaning": "嚴重",
+    "example": "I don't think you quite understand the severity of our financial problems.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Gravity",
+    "meaning": "嚴重；重力",
+    "example": "I don't think you understand the gravity of the situation.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Measurement",
+    "meaning": "測量",
+    "example": "The test is based on the measurement of blood levels.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Resident",
+    "meaning": "居民",
+    "example": "She is a UK resident.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Inhabitant",
+    "meaning": "居民",
+    "example": "a city of five million inhabitants",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Population",
+    "meaning": "人口",
+    "example": "The country is facing a population explosion (= sudden growth in the number of people).",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Occupant",
+    "meaning": "居民",
+    "example": "The previous occupants were an Italian family.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Dweller",
+    "meaning": "居民",
+    "example": "city dwellers",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Settler",
+    "meaning": "居民",
+    "example": "The first settlers of this area were Germans.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Temper",
+    "meaning": "脾氣",
+    "example": "He's got a really bad temper.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Temperament",
+    "meaning": "氣質",
+    "example": "Cavallo's 18th century work on musical temperaments is a key text.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Career",
+    "meaning": "工作",
+    "example": "It helps if you can move a few rungs up the career ladder before taking time off to have a baby.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Vocation",
+    "meaning": "工作",
+    "example": "Most teachers regard their profession as a vocation, not just a job.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Profession",
+    "meaning": "工作",
+    "example": "He left the teaching profession in 1965 to start his own business.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Employment",
+    "meaning": "工作",
+    "example": "Employment levels are unlikely to rise significantly before the end of next year.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Tone",
+    "meaning": "語氣",
+    "example": "I tried to use a sympathetic tone of voice.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Marketing",
+    "meaning": "推銷",
+    "example": "Our marketing people have come up with a great idea for the launch of the new model.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Grid",
+    "meaning": "網格",
+    "example": "A metal grid had been placed over the hole to prevent people from falling in.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Representation",
+    "meaning": "代表",
+    "example": "Can he afford legal representation?",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Commission",
+    "meaning": "委員會",
+    "example": "a commission on alcohol abuse/racial tension",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Operation",
+    "meaning": "手術；執行",
+    "example": "He has to have an operation on his shoulder.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Surgery",
+    "meaning": "手術；診所",
+    "example": "The patient had/underwent surgery on his heart.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Reservation",
+    "meaning": "保留；預定",
+    "example": "The family lives on a Native American reservation.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Contract",
+    "meaning": "合約",
+    "example": "My solicitor is drawing up (= writing) a contract.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Contrast",
+    "meaning": "對立",
+    "example": "I like the contrast of the white trousers with the black jacket.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Contact",
+    "meaning": "聯絡",
+    "example": "There isn't enough contact between teachers and parents.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Construction",
+    "meaning": "建造",
+    "example": "She works in construction/in the construction industry.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Resilience",
+    "meaning": "韌性",
+    "example": "Trauma researchers emphasize the resilience of the human psyche.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Viability",
+    "meaning": "可行",
+    "example": "Rising costs are threatening the viability of many businesses.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Hospitality",
+    "meaning": "好客",
+    "example": "The local people showed me great hospitality.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Sight",
+    "meaning": "視力",
+    "example": "If your sight is poor, you should not drive a car.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Institution",
+    "meaning": "機構",
+    "example": "Harvard University is an internationally respected institution.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Procedure",
+    "meaning": "程序",
+    "example": "The company has new procedures for dealing with complaints.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Proof",
+    "meaning": "證明",
+    "example": "I have a suspicion that he's having an affair, though I don't have any concrete (definite) proof.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Violation",
+    "meaning": "違規",
+    "example": "He claimed that the way he'd been treated was a gross violation of his civil/constitutional/human rights.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Function",
+    "meaning": "運行；功能",
+    "example": "It's a disease that affects the function of the nervous system.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Accommodation",
+    "meaning": "住所",
+    "example": "They paid for his flights and hotel accommodation.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Frugality",
+    "meaning": "節儉",
+    "example": "She was known for her simplicity and frugality.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Attendance",
+    "meaning": "出席；參加",
+    "example": "Attendance at lectures is compulsory.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Budget",
+    "meaning": "預算",
+    "example": "The firm has drawn up a budget for the coming financial year.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Budget",
+    "meaning": "規劃",
+    "example": "An extra $20 million has been budgeted for schools this year.",
+    "category": "動詞",
+    "known": false
+  },
+  {
+    "word": "Proposal",
+    "meaning": "提案；求婚",
+    "example": "Congress has rejected the latest economic proposal put forward by the President.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Aroma",
+    "meaning": "香氣",
+    "example": "the aroma of freshly baked bread",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Rationality",
+    "meaning": "理性",
+    "example": "Science rests on the ideals of objectivity and rationality.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Boundary",
+    "meaning": "分界線",
+    "example": "The Ural mountains mark the boundary between Europe and Asia.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Vaccine",
+    "meaning": "疫苗",
+    "example": "This vaccine protects against some kinds of the bacteria.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Pervasiveness",
+    "meaning": "普遍",
+    "example": "A series of studies demonstrated the pervasiveness of mass violence.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Formation",
+    "meaning": "結構；形成",
+    "example": "a rock formation",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Period",
+    "meaning": "一段時間",
+    "example": "Her work means that she spends long periods away from home.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Gratitude",
+    "meaning": "感激",
+    "example": "Take this as a token of my gratitude for all your help.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Provision",
+    "meaning": "提供",
+    "example": "The provision of good public transport will be essential for developing the area.",
+    "category": "名詞",
+    "known": false
+  },
+  {
+    "word": "Gesture",
+    "meaning": "表示；手勢",
+    "example": "The government donated £500,000 as a gesture of goodwill.",
+    "category": "名詞",
+    "known": false
+  }
+]
