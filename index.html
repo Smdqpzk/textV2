@@ -1339,6 +1339,9 @@
 
         let saveTimer = null;
 
+        // Supabase vocabulary 表目前已存在的資料 ID
+        let cloudWordIds = new Set();
+
 
         // =========================================================
         // DOM
@@ -3031,69 +3034,86 @@
 
         async function saveToSupabase() {
 
-            if (
-                !supabaseClient
-            ) {
-
+            if (!supabaseClient) {
                 syncStatus.textContent =
                     "狀態：⚠️ Supabase 未初始化";
-
                 return;
             }
 
-
-            if (
-                isLoadingFromSupabase
-            ) {
+            if (isLoadingFromSupabase) {
                 return;
             }
-
 
             try {
-
                 syncStatus.textContent =
                     "狀態：☁️ 正在同步...";
 
+                // 逐筆新增 / 更新 vocabulary
+                for (let i = 0; i < words.length; i++) {
+                    const word = words[i];
 
-                const {
-                    error
-                } =
-                    await supabaseClient
-                        .from("vocab_store")
-                        .upsert(
-                            {
-                                id: 1,
-                                data: words
-                            },
-                            {
-                                onConflict:
-                                    "id"
-                            }
-                        );
+                    const payload = {
+                        word: word.word,
+                        meaning: word.meaning,
+                        example: word.example || "",
+                        category: word.category || "其他",
+                        known: word.known ?? false
+                    };
 
+                    if (word.id) {
+                        const { error } = await supabaseClient
+                            .from("vocabulary")
+                            .update(payload)
+                            .eq("id", word.id);
 
-                if (error) {
-                    throw error;
+                        if (error) throw error;
+                    } else {
+                        const { data, error } = await supabaseClient
+                            .from("vocabulary")
+                            .insert(payload)
+                            .select("id")
+                            .single();
+
+                        if (error) throw error;
+
+                        // 保存 Supabase 自動產生的 UUID，之後修改/刪除才能精準對應
+                        if (data?.id) {
+                            words[i].id = data.id;
+                        }
+                    }
                 }
 
+                // 刪除雲端中已經從網頁刪掉的單字
+                const currentIds = new Set(
+                    words
+                        .map(word => word.id)
+                        .filter(Boolean)
+                );
+
+                const idsToDelete = [...cloudWordIds].filter(
+                    id => !currentIds.has(id)
+                );
+
+                if (idsToDelete.length > 0) {
+                    const { error } = await supabaseClient
+                        .from("vocabulary")
+                        .delete()
+                        .in("id", idsToDelete);
+
+                    if (error) throw error;
+                }
+
+                cloudWordIds = currentIds;
+                saveToLocalStorageOnly();
 
                 syncStatus.textContent =
                     `狀態：🟢 雲端同步成功 (${new Date().toLocaleTimeString()})`;
 
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Supabase 儲存失敗：",
-                    error
-                );
-
-
+            } catch (error) {
+                console.error("Supabase 儲存失敗：", error);
                 syncStatus.textContent =
                     "狀態：⚠️ 雲端同步失敗，資料已保留在本機";
             }
-
         }
 
 
@@ -3104,111 +3124,67 @@
         async function loadFromSupabase() {
 
             if (!supabaseClient) {
-
                 syncStatus.textContent =
                     "狀態：⚠️ Supabase SDK 載入失敗，使用本機資料";
-
                 updateCard();
-
                 return;
             }
 
-
-            isLoadingFromSupabase =
-                true;
-
+            isLoadingFromSupabase = true;
 
             syncStatus.textContent =
                 "狀態：☁️ 正在讀取雲端資料...";
 
-
             try {
+                const { data, error } = await supabaseClient
+                    .from("vocabulary")
+                    .select("id, word, meaning, example, category, known, created_at")
+                    .order("created_at", { ascending: true });
 
-                const {
-                    data,
-                    error
-                } =
-                    await supabaseClient
-                        .from("vocab_store")
-                        .select("data")
-                        .eq("id", 1)
-                        .maybeSingle();
+                if (error) throw error;
 
+                // vocabulary 有資料：以雲端資料為準
+                if (Array.isArray(data) && data.length > 0) {
+                    words = data.map(item => ({
+                        id: item.id,
+                        word: item.word,
+                        meaning: item.meaning,
+                        example: item.example || "",
+                        category: item.category || "其他",
+                        known: item.known ?? false
+                    }));
 
-                if (error) {
-                    throw error;
-                }
+                    cloudWordIds = new Set(
+                        words.map(word => word.id).filter(Boolean)
+                    );
 
-
-                // 有雲端資料
-                if (
-                    data &&
-                    Array.isArray(
-                        data.data
-                    )
-                ) {
-
-                    words =
-                        data.data;
-
-
-                    // 同步到本機
                     saveToLocalStorageOnly();
-
-
-                    currentIndex =
-                        0;
-
-                    currentListPage =
-                        1;
-
-
+                    currentIndex = 0;
+                    currentListPage = 1;
                     updateCard();
 
-
                     syncStatus.textContent =
-                        `狀態：🟢 已從雲端同步 (${new Date().toLocaleTimeString()})`;
-
+                        `狀態：🟢 已從雲端同步 ${words.length} 個單字 (${new Date().toLocaleTimeString()})`;
 
                 } else {
-
-                    // 第一次使用
+                    // vocabulary 是空的：把目前本機資料第一次上傳
+                    cloudWordIds = new Set();
                     syncStatus.textContent =
                         "狀態：🟡 雲端尚無資料，正在建立初始資料...";
 
-
-                    // 保持本機資料
                     saveToLocalStorageOnly();
-
-
                     await saveToSupabase();
-
                 }
 
-            }
-
-            catch (error) {
-
-                console.error(
-                    "Supabase 讀取失敗：",
-                    error
-                );
-
-
+            } catch (error) {
+                console.error("Supabase 讀取失敗：", error);
                 syncStatus.textContent =
                     "狀態：⚠️ 雲端讀取失敗，已使用本機資料";
-
-
                 updateCard();
 
+            } finally {
+                isLoadingFromSupabase = false;
             }
-
-            finally {
-
-                isLoadingFromSupabase =
-                    false;
-            }
-
         }
 
 
